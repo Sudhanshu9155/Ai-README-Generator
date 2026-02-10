@@ -1,24 +1,18 @@
 {
-  "name": "ai-readme-generator",
-  "version": "1.0.0",
-  "description": "MERN stack application for generating professional READMEs using AI",
-  "main": "server/index.js",
-  "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && npm start",
-    "client": "cd client && npm run dev",
-    "build": "cd client && npm run build",
-    "start": "node server/index.js"
-  },
-  "keywords": [
-    "ai",
-    "readme",
-    "generator",
-    "mern"
-  ],
-  "author": "Sudhanshu Kumar",
-  "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^7.6.0"
-  }
+    "name": "ai-readme-generator",
+    "version": "1.0.0",
+    "description": "AI-powered README generator",
+    "scripts": {
+        "install-all": "cd backend && npm install && cd ../frontend && npm install",
+        "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+        "start": "cd backend && npm start"
+    },
+    "keywords": [
+        "readme",
+        "ai",
+        "generator",
+        "mern"
+    ],
+    "author": "",
+    "license": "ISC"
 }

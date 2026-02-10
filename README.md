@@ -1,59 +1,44 @@
 # AI README Generator
 
-A MERN stack application that generates professional READMEs using AI.
+A MERN stack application for generating AI-powered README files for your projects.
+
+## Project Structure
+
+```
+ai-readme-generator/
+├── backend/          # Express.js backend
+├── frontend/         # React frontend
+└── README.md         # This file
+```
+
+## Getting Started
+
+### Backend Setup
+```bash
+cd backend
+npm install
+# Configure .env file
+npm run dev
+```
+
+### Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ## Features
 
+- User authentication
+- GitHub OAuth integration
 - AI-powered README generation
-- Customizable templates
-- Real-time preview
-- Multiple language support
+- Project analytics dashboard
+- Activity history tracking
 
 ## Tech Stack
 
 - **Frontend**: React, Vite
 - **Backend**: Node.js, Express
 - **Database**: MongoDB
-- **AI**: OpenAI/Gemini API
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v16+)
-- MongoDB
-- npm or yarn
-
-### Installation
-
-```bash
-# Clone the repository
-git clone <repository-url>
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
-```
-
-## Project Structure
-
-```
-.
-├── client/          # React frontend
-├── server/          # Express backend
-├── .env.example     # Environment variables template
-└── README.md        # This file
-```
-
-## Contributing
-
-Feel free to submit issues and enhancement requests!
-
-## License
-
-MIT
+- **Authentication**: JWT, GitHub OAuth

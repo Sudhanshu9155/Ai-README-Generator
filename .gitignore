@@ -11,23 +11,18 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Build outputs
+dist/
+build/
+*.log
+
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+
+# OS
 .DS_Store
-
-# Build
-dist/
-build/
-*.tgz
-
-# Logs
-logs/
-*.log
-
-# Temp
-tmp/
-temp/
+Thumbs.db
