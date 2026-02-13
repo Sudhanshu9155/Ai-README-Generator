@@ -10,6 +10,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
                 clientID: process.env.GOOGLE_CLIENT_ID,
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 callbackURL: '/api/auth/google/callback',
+                proxy: true, // Add proxy support just in case
             },
             async (accessToken, refreshToken, profile, done) => {
                 try {
@@ -58,6 +59,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                 clientSecret: process.env.GITHUB_CLIENT_SECRET,
                 callbackURL: '/api/auth/github/callback',
                 scope: ['user:email'],
+                userAgent: 'ai-readme-generator', // Add User-Agent header required by GitHub API
             },
             async (accessToken, refreshToken, profile, done) => {
                 try {

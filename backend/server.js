@@ -1,3 +1,6 @@
+// Fix for "SELF_SIGNED_CERT_IN_CHAIN" errors (e.g. from corporate proxies or antivirus)
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 import "dotenv/config"
 
 import express from 'express';

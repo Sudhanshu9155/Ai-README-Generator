@@ -116,7 +116,7 @@ const Login = () => {
                     <div className="mt-6 grid grid-cols-2 gap-3">
                         <div>
                             <a
-                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`}
+                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`}
                                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                             >
                                 <FcGoogle className="h-5 w-5" />
@@ -125,7 +125,7 @@ const Login = () => {
                         </div>
                         <div>
                             <a
-                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/github`}
+                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/github`}
                                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                             >
                                 <FaGithub className="h-5 w-5" />
