@@ -1,5 +1,5 @@
-// Fix for "SELF_SIGNED_CERT_IN_CHAIN" errors (e.g. from corporate proxies or antivirus)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 import "dotenv/config"
 
@@ -7,8 +7,13 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import entityRoutes from './routes/entityRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import activityRoutes from './routes/activityRoutes.js';
+import githubRoutes from './routes/githubRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
-console.log("MONGO URI:", process.env.MONGO_URI);
+// console.log("MONGO URI:", process.env.MONGO_URI);
 
 
 const app = express();
@@ -33,6 +38,11 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/entity', entityRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/activity', activityRoutes);
+app.use('/api/github', githubRoutes);
+app.use('/api/ai', aiRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {

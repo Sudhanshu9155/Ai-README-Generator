@@ -10,12 +10,15 @@ import CreateReadme from './pages/CreateReadme';
 import EditReadme from './pages/EditReadme';
 import History from './pages/History';
 import OAuthCallback from './pages/OAuthCallback';
+import ChatReadme from './pages/ChatReadme';
+
+import DashboardLayout from './layouts/DashboardLayout';
 
 function App() {
     return (
         <Router>
             <AuthProvider>
-                <div className="min-h-screen bg-gray-50">
+                <div className="min-h-screen bg-gray-50 flex flex-col">
                     <Navbar />
                     <Routes>
                         <Route path="/" element={<Home />} />
@@ -23,38 +26,20 @@ function App() {
                         <Route path="/register" element={<Register />} />
                         <Route path="/oauth-callback" element={<OAuthCallback />} />
 
+                        {/* Protected Dashboard Routes */}
                         <Route
-                            path="/dashboard"
                             element={
                                 <ProtectedRoute>
-                                    <Dashboard />
+                                    <DashboardLayout />
                                 </ProtectedRoute>
                             }
-                        />
-                        <Route
-                            path="/create"
-                            element={
-                                <ProtectedRoute>
-                                    <CreateReadme />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/edit/:id"
-                            element={
-                                <ProtectedRoute>
-                                    <EditReadme />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/history"
-                            element={
-                                <ProtectedRoute>
-                                    <History />
-                                </ProtectedRoute>
-                            }
-                        />
+                        >
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/create" element={<CreateReadme />} />
+                            <Route path="/edit/:id" element={<EditReadme />} />
+                            <Route path="/chat" element={<ChatReadme />} />
+                            <Route path="/history" element={<History />} />
+                        </Route>
 
                     </Routes>
                 </div>
