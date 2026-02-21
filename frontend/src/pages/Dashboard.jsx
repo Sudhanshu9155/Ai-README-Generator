@@ -3,15 +3,18 @@ import { getUserReadmes, deleteReadme } from '../api/entityApi';
 import { getDashboardStats } from '../api/analyticsApi';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaPlus, FaGithub, FaHistory, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaPlus, FaGithub, FaHistory, FaTrash, FaEdit, FaCrown } from 'react-icons/fa';
 import Loader from '../components/common/Loader';
+import AnalyticsChart from '../components/charts/AnalyticsChart';
 
 const Dashboard = () => {
-    const { user } = useAuth();
+     const { user } = useAuth(); 
     const [stats, setStats] = useState({ totalReadmes: 0, totalLines: 0, recentActivity: [] });
     const [readmes, setReadmes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const isProUser = user?.isPro === true;
+    const freeLimit = 2;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,12 +63,22 @@ const Dashboard = () => {
                         Manage your README projects and create new ones
                     </p>
                 </div>
-                <Link
-                    to="/create"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-                >
-                    <FaPlus className="mr-2" /> Create New
-                </Link>
+                <div className="flex items-center">
+                    <Link
+                        to="/create"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                    >
+                        <FaPlus className="mr-2" /> Create New
+                    </Link>
+                    {!isProUser && (
+                        <Link
+                            to="/upgrade"
+                            className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-500 hover:bg-yellow-600"
+                        >
+                            <FaCrown className="mr-2" /> Upgrade
+                        </Link>
+                    )}
+                </div>
             </div>
 
             {/* Stats Grid */}
@@ -84,6 +97,10 @@ const Dashboard = () => {
                                     <dd className="text-3xl font-semibold text-gray-900">
                                         {stats.totalReadmes}
                                     </dd>
+                                    {!isProUser && (
+  <p className="mt-2 text-xs text-amber-600 font-medium">
+    Free plan: You can create only {freeLimit} READMEs
+  </p>)}
                                 </dl>
                             </div>
                         </div>
@@ -121,8 +138,20 @@ const Dashboard = () => {
                                     <dt className="text-sm font-medium text-gray-500 truncate">
                                         GitHub Status
                                     </dt>
-                                    <dd className="text-lg font-semibold text-gray-900">
-                                        {user?.githubId ? 'Connected' : 'Not Connected'}
+                                    <dd className="mt-1 flex items-center text-lg font-semibold text-gray-900">
+                                        {user?.githubUsername ? (
+                                            <span className="text-green-600 flex items-center text-sm bg-green-50 px-2 py-1 rounded-full">
+                                                <span className="h-2 w-2 bg-green-500 rounded-full mr-2"></span>
+                                                Connected as {user.githubUsername}
+                                            </span>
+                                        ) : (
+                                            <a
+                                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/github`}
+                                                className="text-indigo-600 hover:text-indigo-900 text-sm font-medium flex items-center"
+                                            >
+                                                Connect Now &rarr;
+                                            </a>
+                                        )}
                                     </dd>
                                 </dl>
                             </div>

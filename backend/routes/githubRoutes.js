@@ -1,14 +1,14 @@
+
 import express from 'express';
-import { getUserRepos, getRepoDetails, getRepoContent, analyzeRepo } from '../controllers/githubController.js';
+import { listRepos, analyzeRepo, pushToRepo} from '../controllers/githubController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(protect); // Protect all routes
+router.get('/repos', protect, listRepos);
+router.post('/analyze', protect, analyzeRepo);
 
-router.get('/repos', getUserRepos);
-router.get('/repos/:owner/:repo', getRepoDetails);
-router.get('/content', getRepoContent);
-router.post('/analyze', analyzeRepo);
+// Push README endpoints
+router.post('/push', protect, pushToRepo);
 
 export default router;

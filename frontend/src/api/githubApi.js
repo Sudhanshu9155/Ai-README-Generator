@@ -1,25 +1,45 @@
+
 import api from './axios';
 
-// Get user repositories from GitHub
-export const getUserRepos = async () => {
-    const response = await api.get('/github/repos');
-    return response.data;
+// Get list of repositories for the authenticated user
+export const listRepos = async () => {
+    try {
+        const response = await api.get('/github/repos');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching repositories:', error);
+        throw error;
+    }
 };
 
-// Get repository details
-export const getRepoDetails = async (owner, repo) => {
-    const response = await api.get(`/github/repos/${owner}/${repo}`);
-    return response.data;
+// Analyze a selected repository
+export const analyzeRepo = async (repoUrl, repoName) => {
+    try {
+        const response = await api.post('/github/analyze', { repoUrl, repoName });
+        return response.data;
+    } catch (error) {
+        console.error('Error analyzing repository:', error);
+        throw error;
+    }
 };
 
-// Get repository content (file list or file content)
-export const getRepoContent = async (owner, repo, path = '') => {
-    const response = await api.get(`/github/content?owner=${owner}&repo=${repo}&path=${path}`);
-    return response.data;
-};
+// Push README by providing repoName (owner/repo) and content
+export const pushReadme = async (mainEntityId) => {
+    if (!mainEntityId) {
+        throw new Error('MainEntity ID is required');
+    }
 
-// Analyze repo for tech stack
-export const analyzeRepo = async (owner, repo) => {
-    const response = await api.post('/github/analyze', { owner, repo });
-    return response.data;
+    try {
+        const response = await api.post('/github/push', {
+            mainEntityId
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error(
+            'Error pushing README:',
+            error.response?.data || error.message
+        );
+        throw error;
+    }
 };

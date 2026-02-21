@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { authApi } from '../api/authApi';
+import { register as registerUser, login as loginUser, getMe, updateProfile as updateUserProfile, logout as logoutUser } from '../api/authApi';
 
 const AuthContext = createContext(null);
 
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const token = localStorage.getItem('token');
             if (token) {
-                const data = await authApi.getMe();
+                const data = await getMe();
                 setUser(data.data);
             }
         } catch (err) {
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             setError(null);
-            const data = await authApi.register(userData);
+            const data = await registerUser(userData);
             localStorage.setItem('token', data.data.token);
             setUser(data.data);
             return { success: true };
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     const login = async (credentials) => {
         try {
             setError(null);
-            const data = await authApi.login(credentials);
+            const data = await loginUser(credentials);
             localStorage.setItem('token', data.data.token);
             setUser(data.data);
             return { success: true };
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await authApi.logout();
+            await logoutUser();
         } catch (err) {
             console.error('Logout error:', err);
         } finally {
@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
     const updateProfile = async (userData) => {
         try {
             setError(null);
-            const data = await authApi.updateProfile(userData);
+            const data = await updateUserProfile(userData);
             setUser(data.data);
             return { success: true };
         } catch (err) {

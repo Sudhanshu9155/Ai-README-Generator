@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReadmeById, updateReadme } from '../api/entityApi';
 import ReadmePreview from '../components/readme/ReadmePreview';
+
 import ReadmeForm from '../components/readme/ReadmeForm';
 import Loader from '../components/common/Loader';
 
@@ -49,6 +50,8 @@ const EditReadme = () => {
         }
     };
 
+    // Push to GitHub UI removed from frontend.
+
     if (loading) return <Loader />;
     if (error) return <div className="text-center py-10 text-red-600">{error}</div>;
 
@@ -90,6 +93,7 @@ const EditReadme = () => {
                     content={readme.content}
                     onEdit={() => setIsEditing(true)}
                     onSave={() => alert("Changes saved automatically on update!")}
+                    entity={readme}
                 />
             )}
         </div>

@@ -5,23 +5,23 @@ export const generateReadmeContent = async (projectDetails) => {
         const { title, description, techStack, features } = projectDetails;
 
         // Construct the prompt
-        const prompt = `Generate a professional README.md content for a project with the following details:
-Project Title: ${title}
-Description: ${description}
-Tech Stack: ${techStack.join(', ')}
-Key Features: ${features.join(', ')}
+                const prompt = `Generate a professional README.md content for a project with the following details:
+        Project Title: ${title}
+        Description: ${description}
+        Tech Stack: ${techStack.join(', ')}
+        Key Features: ${features.join(', ')}
 
-The README should include:
-- Title and Description
-- Table of Contents
-- Installation Instructions
-- Usage Guide
-- Features List
-- Tech Stack
-- Contributing Guidelines
-- License
+        The README should include:
+        - Title and Description
+        - Table of Contents
+        - Installation Instructions
+        - Usage Guide
+        - Features List
+        - Tech Stack
+        - Contributing Guidelines
+        - License
 
-Format the output in strict Markdown.`;
+        Format the output in strict Markdown.`;
 
         // Check for API Key
         const apiKey = process.env.GEMINI_API_KEY;

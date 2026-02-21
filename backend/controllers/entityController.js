@@ -5,26 +5,41 @@ import { generateReadmeContent } from '../services/aiService.js';
 // Create a new README
 export const createReadme = async (req, res) => {
     try {
-        const { title, description, techStack, features, isPublic } = req.body;
+        const { title, description, techStack, features, isPublic, repoUrl } = req.body;
+        const user = req.user;
+
+        // Check for free tier limit
+        if (!user.isPro && user.freeGenerationsUsed >= 2) {
+            return res.status(403).json({
+                success: false, // Standardize response format if possible, but existing code uses mixed. Check other controllers.
+                message: 'Free limit reached. Please upgrade to create more READMEs.',
+                code: 'LIMIT_REACHED'
+            });
+        }
 
         // Generate content using AI
         const content = await generateReadmeContent({ title, description, techStack, features });
 
         const newEntity = new MainEntity({
-            user: req.user._id,
+            user: user._id,
             title,
             description,
             content,
             techStack,
             features,
-            isPublic
+            isPublic,
+            repoUrl
         });
 
         const savedEntity = await newEntity.save();
 
+        // Increment usage count for free users (or track usage for all)
+        user.freeGenerationsUsed += 1;
+        await user.save();
+
         // Log activity
         await Activity.create({
-            user: req.user._id,
+            user: user._id,
             action: 'CREATED_README',
             details: `Created README for ${title}`,
             entityId: savedEntity._id
@@ -71,7 +86,7 @@ export const getReadmeById = async (req, res) => {
 // Update a README
 export const updateReadme = async (req, res) => {
     try {
-        const { title, description, content, isPublic, techStack, features, regenerate } = req.body;
+        const { title, description, content, isPublic, techStack, features, regenerate, repoUrl } = req.body;
         let entity = await MainEntity.findById(req.params.id);
 
         if (!entity) {
@@ -87,6 +102,7 @@ export const updateReadme = async (req, res) => {
         entity.isPublic = isPublic !== undefined ? isPublic : entity.isPublic;
         entity.techStack = techStack || entity.techStack;
         entity.features = features || entity.features;
+        entity.repoUrl = repoUrl || entity.repoUrl;
 
         // If specific content is provided, use it (manual edit)
         if (content) {

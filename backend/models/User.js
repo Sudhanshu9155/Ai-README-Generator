@@ -32,9 +32,25 @@ const userSchema = new mongoose.Schema(
             sparse: true,
             select: false,
         },
+        githubAccessToken: {
+            type: String,
+            select: false, // Don't return by default
+        },
+        githubUsername: {
+            type: String,
+            sparse: true,
+        },
         avatar: {
             type: String,
             default: '',
+        },
+        freeGenerationsUsed: {
+            type: Number,
+            default: 0,
+        },
+        isPro: {
+            type: Boolean,
+            default: false,
         },
     },
     {

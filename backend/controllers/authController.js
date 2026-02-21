@@ -39,6 +39,8 @@ export const register = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 avatar: user.avatar,
+                githubId: null,
+                githubUsername: null,
                 token,
             },
         });
@@ -90,6 +92,8 @@ export const login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 avatar: user.avatar,
+                githubId: user.githubId || null,
+                githubUsername: user.githubUsername || null,
                 token,
             },
         });
@@ -105,7 +109,7 @@ export const login = async (req, res) => {
 
 export const getMe = async (req, res) => {
     try {
-        const user = req.user;
+        const user = await User.findById(req.user._id);
 
         res.status(200).json({
             success: true,
@@ -113,7 +117,10 @@ export const getMe = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                isPro: user.isPro,
                 avatar: user.avatar,
+                githubId: user.githubId || null,
+                githubUsername: user.githubUsername || null,
                 createdAt: user.createdAt,
             },
         });
@@ -122,10 +129,10 @@ export const getMe = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Server error',
-            error: error.message,
         });
     }
 };
+
 
 export const updateProfile = async (req, res) => {
     try {

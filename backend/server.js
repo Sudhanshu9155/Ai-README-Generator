@@ -11,7 +11,9 @@ import entityRoutes from './routes/entityRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
 import githubRoutes from './routes/githubRoutes.js';
-import aiRoutes from './routes/aiRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+
+
 
 // console.log("MONGO URI:", process.env.MONGO_URI);
 
@@ -42,7 +44,7 @@ app.use('/api/entity', entityRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/github', githubRoutes);
-app.use('/api/ai', aiRoutes);
+app.use('/api/payment', paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
