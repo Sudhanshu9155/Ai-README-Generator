@@ -20,8 +20,13 @@ const BASE_URL =
 |--------------------------------------------------------------------------
 */
 
-const GOOGLE_CALLBACK_URL = `${BASE_URL}/api/auth/google/callback`;
-const GITHUB_CALLBACK_URL = `${BASE_URL}/api/auth/github/callback`;
+const GOOGLE_CALLBACK_URL =
+  process.env.GOOGLE_CALLBACK_URL ||
+  `${BASE_URL}/api/auth/google/callback`;
+
+const GITHUB_CALLBACK_URL =
+  process.env.GITHUB_CALLBACK_URL ||
+  `${BASE_URL}/api/auth/github/callback`;
 
 /*
 |--------------------------------------------------------------------------
