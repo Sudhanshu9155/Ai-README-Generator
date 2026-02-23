@@ -65,7 +65,7 @@ const frontendDistPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(frontendDistPath));
 
 // Catch-all route to serve index.html for SPA (Fixes Page Not Found on Refresh)
-app.get('(.*)', (req, res, next) => {
+app.get('/:path*', (req, res, next) => {
     // Only serve index.html if it's not an API route
     if (req.url.startsWith('/api')) {
         return next();
