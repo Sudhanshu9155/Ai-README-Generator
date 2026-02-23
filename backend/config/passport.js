@@ -3,19 +3,31 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as GitHubStrategy } from "passport-github2";
 import User from "../models/User.js";
 
-const normalizeBaseUrl = (url) => (url || "").replace(/\/+$/, "");
+/*
+|--------------------------------------------------------------------------
+| BASE URL (Auto-detect Render or Local)
+|--------------------------------------------------------------------------
+*/
 
 const BASE_URL =
-  normalizeBaseUrl(process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL) ||
-  (process.env.NODE_ENV === "production"
-    ? "https://ai-readme-generator-backend.onrender.com"
-    : "http://localhost:5000");
+  process.env.BACKEND_URL ||
+  process.env.RENDER_EXTERNAL_URL ||
+  "http://localhost:5000";
 
-const GOOGLE_CALLBACK_URL =
-  process.env.GOOGLE_CALLBACK_URL || `${BASE_URL}/api/auth/google/callback`;
+/*
+|--------------------------------------------------------------------------
+| CALLBACK URLS
+|--------------------------------------------------------------------------
+*/
 
-const GITHUB_CALLBACK_URL =
-  process.env.GITHUB_CALLBACK_URL || `${BASE_URL}/api/auth/github/callback`;
+const GOOGLE_CALLBACK_URL = `${BASE_URL}/api/auth/google/callback`;
+const GITHUB_CALLBACK_URL = `${BASE_URL}/api/auth/github/callback`;
+
+/*
+|--------------------------------------------------------------------------
+| GOOGLE STRATEGY
+|--------------------------------------------------------------------------
+*/
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(
@@ -36,7 +48,6 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
           if (email) {
             user = await User.findOne({ email });
-
             if (user) {
               user.googleId = profile.id;
               if (!user.avatar)
@@ -48,21 +59,25 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
           const newUser = await User.create({
             name: profile.displayName,
-            email: email,
+            email,
             googleId: profile.id,
             avatar: profile.photos?.[0]?.value,
           });
 
           done(null, newUser);
-        } catch (error) {
-          done(error, null);
+        } catch (err) {
+          done(err, null);
         }
       }
     )
   );
-} else {
-  console.warn("Google OAuth disabled. Missing credentials.");
 }
+
+/*
+|--------------------------------------------------------------------------
+| GITHUB STRATEGY
+|--------------------------------------------------------------------------
+*/
 
 if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
   passport.use(
@@ -89,7 +104,6 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
 
           if (email) {
             user = await User.findOne({ email });
-
             if (user) {
               user.githubId = profile.id;
               user.githubUsername = profile.username;
@@ -111,15 +125,19 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
           });
 
           done(null, newUser);
-        } catch (error) {
-          done(error, null);
+        } catch (err) {
+          done(err, null);
         }
       }
     )
   );
-} else {
-  console.warn("GitHub OAuth disabled. Missing credentials.");
 }
+
+/*
+|--------------------------------------------------------------------------
+| SERIALIZE / DESERIALIZE
+|--------------------------------------------------------------------------
+*/
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
