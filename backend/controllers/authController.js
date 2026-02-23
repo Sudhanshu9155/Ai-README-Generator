@@ -193,6 +193,7 @@ export const logout = async (req, res) => {
 
 export const oauthCallback = (req, res) => {
     const token = generateToken({ id: req.user._id });
+    const frontendBaseUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
     // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/oauth-callback?token=${token}`);
+    res.redirect(`${frontendBaseUrl}/oauth-callback?token=${token}`);
 };

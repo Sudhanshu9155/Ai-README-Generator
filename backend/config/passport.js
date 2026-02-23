@@ -3,12 +3,19 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as GitHubStrategy } from "passport-github2";
 import User from "../models/User.js";
 
+const normalizeBaseUrl = (url) => (url || "").replace(/\/+$/, "");
 
 const BASE_URL =
-  process.env.BACKEND_URL ||
+  normalizeBaseUrl(process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL) ||
   (process.env.NODE_ENV === "production"
     ? "https://ai-readme-generator-backend.onrender.com"
     : "http://localhost:5000");
+
+const GOOGLE_CALLBACK_URL =
+  process.env.GOOGLE_CALLBACK_URL || `${BASE_URL}/api/auth/google/callback`;
+
+const GITHUB_CALLBACK_URL =
+  process.env.GITHUB_CALLBACK_URL || `${BASE_URL}/api/auth/github/callback`;
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(
@@ -16,7 +23,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${BASE_URL}/api/auth/google/callback`,
+        callbackURL: GOOGLE_CALLBACK_URL,
         proxy: true,
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -63,7 +70,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: `${BASE_URL}/api/auth/github/callback`,
+        callbackURL: GITHUB_CALLBACK_URL,
         scope: ["user:email", "repo"],
         proxy: true,
       },
