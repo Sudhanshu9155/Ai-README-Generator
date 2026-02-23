@@ -21,9 +21,9 @@ import paymentRoutes from './routes/paymentRoutes.js';
 const app = express();
 
 const allowedOrigins = [
+    process.env.FRONTEND_URL,
     'http://localhost:5173',
-    'http://localhost:3000',
-    process.env.FRONTEND_URL
+    'http://localhost:3000'
 ].filter(Boolean);
 
 app.use(cors({
