@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-    FaUserCircle, FaSignOutAlt, FaDatabase, FaHistory, 
-    FaPlus, FaCog, FaBars, FaTimes, FaChartLine, FaCrown 
+import {
+    FaUserCircle, FaSignOutAlt, FaDatabase, FaHistory,
+    FaPlus, FaCog, FaBars, FaTimes, FaChartLine, FaCrown
 } from 'react-icons/fa';
 
 const Navbar = () => {
@@ -20,7 +20,7 @@ const Navbar = () => {
         <nav className="fixed top-0 left-0 right-0 z-[100] bg-[#030712]/80 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-purple-500/5">
             <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
-                    
+
                     {/* Logo & Brand */}
                     <div className="flex items-center">
                         <Link to="/" className="flex items-center space-x-2 group">
@@ -42,9 +42,9 @@ const Navbar = () => {
                     {/* Desktop Navigation */}
                     {isAuthenticated && (
                         <div className="hidden md:flex items-center space-x-1 bg-white/5 ml-40 p-1.5 rounded-2xl border border-white/5">
-                            <NavLink to="/dashboard" active={isActive('/dashboard')} icon={<FaDatabase size={12}/>} label="Dashboard" />
-                            <NavLink to="/create" active={isActive('/create')} icon={<FaPlus size={12}/>} label="Create" />
-                            <NavLink to="/history" active={isActive('/history')} icon={<FaHistory size={12}/>} label="History" />
+                            <NavLink to="/dashboard" active={isActive('/dashboard')} icon={<FaDatabase size={12} />} label="Dashboard" />
+                            <NavLink to="/create" active={isActive('/create')} icon={<FaPlus size={12} />} label="Create" />
+                            <NavLink to="/history" active={isActive('/history')} icon={<FaHistory size={12} />} label="History" />
                         </div>
                     )}
 
@@ -69,11 +69,10 @@ const Navbar = () => {
                                 {/* Settings (Desktop) */}
                                 <Link
                                     to="/settings"
-                                    className={`p-2.5 rounded-xl transition-all active:scale-95 group border hidden md:block ${
-                                        isActive('/settings') 
-                                        ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-900/20' 
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent hover:border-white/10'
-                                    }`}
+                                    className={`p-2.5 rounded-xl transition-all active:scale-95 group border hidden md:block ${isActive('/settings')
+                                            ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-900/20'
+                                            : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent hover:border-white/10'
+                                        }`}
                                     title="Settings"
                                 >
                                     <FaCog className={`transition-transform duration-500 ${isActive('/settings') ? 'animate-spin-slow' : 'group-hover:rotate-90'}`} />
@@ -89,7 +88,7 @@ const Navbar = () => {
                                 </button> */}
 
                                 {/* Mobile Toggle */}
-                                <button 
+                                <button
                                     onClick={toggleMenu}
                                     className="md:hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white active:scale-95 transition-all"
                                 >
@@ -107,34 +106,32 @@ const Navbar = () => {
             </div>
 
             {/* MOBILE MENU */}
-            <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-[#030712]/95 backdrop-blur-2xl border-b border-white/10 ${
-                isMenuOpen ? 'max-h-[600px] py-6 opacity-100' : 'max-h-0 py-0 opacity-0'
-            }`}>
+            <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-[#030712]/95 backdrop-blur-2xl border-b border-white/10 ${isMenuOpen ? 'max-h-[600px] py-6 opacity-100' : 'max-h-0 py-0 opacity-0'
+                }`}>
                 <div className="flex flex-col px-4 gap-2">
                     <MobileNavLink to="/dashboard" onClick={toggleMenu} icon={<FaDatabase />} label="Dashboard" active={isActive('/dashboard')} />
-                    <MobileNavLink to="/create" onClick={toggleMenu} icon={<FaPlus />} label="Create Project" active={isActive('/create')} />
-                    <MobileNavLink to="/history" onClick={toggleMenu} icon={<FaHistory />} label="System History" active={isActive('/history')} />
-                    <MobileNavLink to="/analytics" onClick={toggleMenu} icon={<FaChartLine />} label="Neural Analytics" active={isActive('/analytics')} />
-                    
+                    <MobileNavLink to="/create" onClick={toggleMenu} icon={<FaPlus />} label="Create" active={isActive('/create')} />
+                    <MobileNavLink to="/history" onClick={toggleMenu} icon={<FaHistory />} label="History" active={isActive('/history')} />
+                    <MobileNavLink to="/analytics" onClick={toggleMenu} icon={<FaChartLine />} label="Analytics" active={isActive('/analytics')} />
+
                     {!isProUser && (
                         <MobileNavLink to="/upgrade" onClick={toggleMenu} icon={<FaCrown className="text-amber-400" />} label="Upgrade to Pro" active={isActive('/upgrade')} />
                     )}
 
                     <MobileNavLink to="/settings" onClick={toggleMenu} icon={<FaCog />} label="Settings" active={isActive('/settings')} />
-                    
-                    <button 
+
+                    {/* <button 
                         onClick={() => { logout(); toggleMenu(); }}
                         className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-400 mt-2"
                     >
                         <FaSignOutAlt />
                         <span className="text-xs font-black uppercase tracking-[0.2em]">Terminate Session</span>
-                    </button>
+                    </button> */}
 
                     <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Neural Link</span>
-                        <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase border ${
-                            isProUser ? 'text-amber-400 border-amber-500/20' : 'text-slate-400 border-white/5'
-                        }`}>
+                        <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase border ${isProUser ? 'text-amber-400 border-amber-500/20' : 'text-slate-400 border-white/5'
+                            }`}>
                             {isProUser ? 'Pro Access' : 'Basic Tier'}
                         </span>
                     </div>
@@ -152,14 +149,13 @@ const NavLink = ({ to, active, label, icon }) => (
 );
 
 const MobileNavLink = ({ to, label, icon, active, onClick }) => (
-    <Link 
-        to={to} 
+    <Link
+        to={to}
         onClick={onClick}
-        className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all border ${
-            active 
-            ? 'bg-purple-600/20 border-purple-500/30 text-white' 
-            : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white'
-        }`}
+        className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all border ${active
+                ? 'bg-purple-600/20 border-purple-500/30 text-white'
+                : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white'
+            }`}
     >
         <span className={active ? 'text-purple-400' : ''}>{icon}</span>
         <span className="text-xs font-black uppercase tracking-[0.2em]">{label}</span>
