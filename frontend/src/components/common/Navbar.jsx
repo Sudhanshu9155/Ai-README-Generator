@@ -1,126 +1,169 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaChevronDown } from 'react-icons/fa';
+import { 
+    FaUserCircle, FaSignOutAlt, FaDatabase, FaHistory, 
+    FaPlus, FaCog, FaBars, FaTimes, FaChartLine, FaCrown 
+} from 'react-icons/fa';
 
 const Navbar = () => {
     const { user, isAuthenticated, logout } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = async () => {
-        await logout();
-        navigate('/login');
-    };
+    const location = useLocation();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const isProUser = user?.isPro === true;
+    const isActive = (path) => location.pathname === path;
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     return (
-        <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                    {/* Logo */}
+        <nav className="fixed top-0 left-0 right-0 z-[100] bg-[#030712]/80 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-purple-500/5">
+            <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center h-20">
+                    
+                    {/* Logo & Brand */}
                     <div className="flex items-center">
-                        <Link
-                            to="/"
-                            className="flex items-center space-x-2 group"
-                        >
-                            <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent group-hover:from-indigo-700 group-hover:to-purple-700 transition-all duration-300">
-                                📝
+                        <Link to="/" className="flex items-center space-x-2 group">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-purple-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                                <div className="relative w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                    ✨
+                                </div>
                             </div>
-                            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hidden sm:inline">
-                                AI README
-                            </span>
+                            <div className="flex flex-col">
+                                <span className="text-lg font-black tracking-tighter text-white">
+                                    AI <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">README</span>
+                                </span>
+                                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em] -mt-1">Neural Generator</span>
+                            </div>
                         </Link>
                     </div>
 
-                    {/* Main Navigation */}
+                    {/* Desktop Navigation */}
                     {isAuthenticated && (
-                        <div className="hidden md:flex space-x-1">
-                            <Link
-                                to="/dashboard"
-                                className="px-3 py-2 rounded-lg text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-300 text-sm font-medium"
-                            >
-                                Dashboard
-                            </Link>
-                            <Link
-                                to="/create"
-                                className="px-3 py-2 rounded-lg text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-300 text-sm font-medium"
-                            >
-                                Create
-                            </Link>
-                            <Link
-                                to="/history"
-                                className="px-3 py-2 rounded-lg text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-300 text-sm font-medium"
-                            >
-                                History
-                            </Link>
+                        <div className="hidden md:flex items-center space-x-1 bg-white/5 ml-40 p-1.5 rounded-2xl border border-white/5">
+                            <NavLink to="/dashboard" active={isActive('/dashboard')} icon={<FaDatabase size={12}/>} label="Dashboard" />
+                            <NavLink to="/create" active={isActive('/create')} icon={<FaPlus size={12}/>} label="Create" />
+                            <NavLink to="/history" active={isActive('/history')} icon={<FaHistory size={12}/>} label="History" />
                         </div>
                     )}
 
                     {/* Right Section */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                         {isAuthenticated ? (
-                            <div className="flex items-center gap-3">
-                                {/* User Name */}
-                                <div className="hidden sm:flex items-center gap-2">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">
-                                        {user?.name?.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div className="hidden lg:block">
-
-                                        <p className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                                            {user?.name}
-
-                                            <span
-                                                className={`text-[10px] font-semibold px-2 py-[2px] rounded-md uppercase tracking-wide
-    ${isProUser
-                                                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                                        : 'bg-gray-50 text-gray-500 border border-gray-200'
-                                                    }`}
-                                            >
-                                                {isProUser ? 'Pro' : 'Free'}
-                                            </span>
-                                        </p>
-                                        <p className="text-xs text-gray-500">{user?.email}</p>
+                            <>
+                                {/* User Info */}
+                                <div className="hidden sm:flex items-center gap-3 pr-2">
+                                    <span className="text-sm font-bold text-slate-200">{user?.name}</span>
+                                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 p-[1px]">
+                                        <div className="w-full h-full bg-[#030712] rounded-xl flex items-center justify-center overflow-hidden">
+                                            {user?.avatar || user?.photo ? (
+                                                <img src={user.avatar || user.photo} alt="User" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-white font-black text-xs">{user?.name?.charAt(0)}</span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={handleLogout}
-                                    className="hidden md:inline-flex btn-primary btn-sm"
+                                {/* Settings (Desktop) */}
+                                <Link
+                                    to="/settings"
+                                    className={`p-2.5 rounded-xl transition-all active:scale-95 group border hidden md:block ${
+                                        isActive('/settings') 
+                                        ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-900/20' 
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent hover:border-white/10'
+                                    }`}
+                                    title="Settings"
                                 >
-                                    Logout
-                                </button>
+                                    <FaCog className={`transition-transform duration-500 ${isActive('/settings') ? 'animate-spin-slow' : 'group-hover:rotate-90'}`} />
+                                </Link>
 
-                                {/* Mobile Logout */}
-                                <button
-                                    onClick={handleLogout}
-                                    className="md:hidden px-3 py-1.5 text-xs font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300"
+                                {/* Logout (Desktop) */}
+                                {/* <button 
+                                    onClick={logout}
+                                    className="hidden md:flex p-2.5 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-400/10 border border-transparent hover:border-red-400/20 transition-all"
+                                    title="Sign Out"
                                 >
-                                    Logout
+                                    <FaSignOutAlt />
+                                </button> */}
+
+                                {/* Mobile Toggle */}
+                                <button 
+                                    onClick={toggleMenu}
+                                    className="md:hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white active:scale-95 transition-all"
+                                >
+                                    {isMenuOpen ? <FaTimes /> : <FaBars />}
                                 </button>
-                            </div>
+                            </>
                         ) : (
                             <div className="flex items-center gap-3">
-                                <Link
-                                    to="/login"
-                                    className="hidden sm:inline px-4 py-2 text-gray-600 font-medium text-sm hover:text-indigo-600 transition-colors duration-300"
-                                >
-                                    Login
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    className="btn-primary btn-sm"
-                                >
-                                    <span className="hidden sm:inline">Sign up</span>
-                                    <span className="sm:hidden">Sign up</span>
-                                </Link>
+                                <Link to="/login" className="px-5 py-2 text-slate-400 font-bold text-xs uppercase hover:text-white">Log In</Link>
+                                <Link to="/register" className="bg-indigo-600 px-6 py-2.5 rounded-xl font-black text-xs text-white uppercase shadow-lg shadow-indigo-500/20">Initialize</Link>
                             </div>
                         )}
+                    </div>
+                </div>
+            </div>
+
+            {/* MOBILE MENU */}
+            <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-[#030712]/95 backdrop-blur-2xl border-b border-white/10 ${
+                isMenuOpen ? 'max-h-[600px] py-6 opacity-100' : 'max-h-0 py-0 opacity-0'
+            }`}>
+                <div className="flex flex-col px-4 gap-2">
+                    <MobileNavLink to="/dashboard" onClick={toggleMenu} icon={<FaDatabase />} label="Dashboard" active={isActive('/dashboard')} />
+                    <MobileNavLink to="/create" onClick={toggleMenu} icon={<FaPlus />} label="Create Project" active={isActive('/create')} />
+                    <MobileNavLink to="/history" onClick={toggleMenu} icon={<FaHistory />} label="System History" active={isActive('/history')} />
+                    <MobileNavLink to="/analytics" onClick={toggleMenu} icon={<FaChartLine />} label="Neural Analytics" active={isActive('/analytics')} />
+                    
+                    {!isProUser && (
+                        <MobileNavLink to="/upgrade" onClick={toggleMenu} icon={<FaCrown className="text-amber-400" />} label="Upgrade to Pro" active={isActive('/upgrade')} />
+                    )}
+
+                    <MobileNavLink to="/settings" onClick={toggleMenu} icon={<FaCog />} label="Settings" active={isActive('/settings')} />
+                    
+                    <button 
+                        onClick={() => { logout(); toggleMenu(); }}
+                        className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-400 mt-2"
+                    >
+                        <FaSignOutAlt />
+                        <span className="text-xs font-black uppercase tracking-[0.2em]">Terminate Session</span>
+                    </button>
+
+                    <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Neural Link</span>
+                        <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase border ${
+                            isProUser ? 'text-amber-400 border-amber-500/20' : 'text-slate-400 border-white/5'
+                        }`}>
+                            {isProUser ? 'Pro Access' : 'Basic Tier'}
+                        </span>
                     </div>
                 </div>
             </div>
         </nav>
     );
 };
+
+const NavLink = ({ to, active, label, icon }) => (
+    <Link to={to} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${active ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+        {icon}
+        {label}
+    </Link>
+);
+
+const MobileNavLink = ({ to, label, icon, active, onClick }) => (
+    <Link 
+        to={to} 
+        onClick={onClick}
+        className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all border ${
+            active 
+            ? 'bg-purple-600/20 border-purple-500/30 text-white' 
+            : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white'
+        }`}
+    >
+        <span className={active ? 'text-purple-400' : ''}>{icon}</span>
+        <span className="text-xs font-black uppercase tracking-[0.2em]">{label}</span>
+    </Link>
+);
 
 export default Navbar;

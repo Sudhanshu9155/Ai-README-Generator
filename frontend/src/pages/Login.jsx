@@ -1,23 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
-import { FaGithub, FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaGithub, FaEnvelope, FaLock, FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
     const { login, error } = useAuth();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({
-        email: '',
-        password: '',
-    });
+    const [errors, setErrors] = useState({ email: '', password: '' });
 
-    // Email validation function
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) return 'Email is required';
@@ -25,21 +18,16 @@ const Login = () => {
         return '';
     };
 
-    // Password validation function
     const validatePassword = (password) => {
         if (!password) return 'Password is required';
-        if (password.length < 6) return 'Password must be at least 6 characters';
+        if (password.length < 6) return 'At least 6 characters';
         return '';
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+        setFormData({ ...formData, [name]: value });
         
-        // Real-time validation
         if (name === 'email') {
             setErrors({ ...errors, email: validateEmail(value) });
         } else if (name === 'password') {
@@ -47,197 +35,152 @@ const Login = () => {
         }
     };
 
-    const validateForm = () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         const emailError = validateEmail(formData.email);
         const passwordError = validatePassword(formData.password);
         
-        const newErrors = {
-            email: emailError,
-            password: passwordError,
-        };
-        
-        setErrors(newErrors);
-        return !emailError && !passwordError;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (!validateForm()) {
+        if (emailError || passwordError) {
+            setErrors({ email: emailError, password: passwordError });
             return;
         }
 
         setLoading(true);
-
         const result = await login(formData);
-
-        if (result.success) {
-            navigate('/dashboard');
-        }
+        if (result.success) navigate('/dashboard');
         setLoading(false);
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
-            {/* Decorative background elements */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-r from-indigo-200 to-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-r from-purple-200 to-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[#030712] relative overflow-x-hidden px-4 py-12">
+            
+            {/* Return to Home: Adjusted for Mobile positioning */}
+            <div className="absolute top-6 left-4 md:top-8 md:left-8 z-20">
+                <button 
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white transition-all text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] group"
+                >
+                    <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
+                    <span className="hidden xs:inline">Return to Home</span>
+                    <span className="xs:hidden">Back</span>
+                </button>
+            </div>
 
-            <div className="max-w-md w-full space-y-8 relative z-10 animate-slideInUp">
-                <div className="card p-8 space-y-6">
-                    <div className="text-center space-y-4">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl text-white text-2xl shadow-lg">
-                            📝
+            {/* Background Animations */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="stars-small opacity-40"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-indigo-900/20 blur-[120px] rounded-full"></div>
+            </div>
+
+            <div className="max-w-md w-full relative z-10">
+                {/* Glassmorphism Card: Responsive Padding */}
+                <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl relative">
+                    <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+
+                    <div className="text-center space-y-3 mb-8 md:mb-10">
+                        <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-white/5 border border-white/10 rounded-2xl text-xl shadow-inner">
+                            <span>📝</span>
                         </div>
                         <div>
-                            <h2 className="h2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            <h2 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent tracking-tight">
                                 Welcome Back
                             </h2>
-                            <p className="text-gray-600 text-sm mt-2">
-                                Sign in to access your README projects
+                            <p className="text-slate-500 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] mt-1">
+                                Authenticate to Continue
                             </p>
                         </div>
                     </div>
 
                     <form className="space-y-5" onSubmit={handleSubmit}>
                         {error && (
-                            <div className="rounded-lg bg-red-50 border border-red-200 p-4 animate-slideInDown">
-                                <div className="flex items-start gap-3">
-                                    <span className="text-red-600 text-lg">⚠</span>
-                                    <p className="text-sm text-red-700 font-medium">{error}</p>
-                                </div>
+                            <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 animate-shake">
+                                <p className="text-[10px] text-red-400 font-bold flex items-center gap-2">
+                                    <span>⚠️</span> {error}
+                                </p>
                             </div>
                         )}
 
                         {/* Email Input */}
-                        <div className="form-group">
-                            <label htmlFor="email" className="form-label">Email Address</label>
-                            <div className="relative">
-                                <FaEnvelope className="absolute left-4 top-3.5 text-gray-400" />
+                        <div className="space-y-1.5">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Email</label>
+                            <div className="relative group">
+                                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors" />
                                 <input
-                                    id="email"
                                     name="email"
                                     type="email"
-                                    required
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className={`input-field pl-11 focus:ring-indigo-500 ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
-                                    placeholder="you@example.com"
+                                    className={`w-full bg-white/5 border ${errors.email ? 'border-red-500/50' : 'border-white/10'} focus:border-purple-500/50 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white transition-all outline-none`}
+                                    placeholder="user@neural.link"
                                 />
                             </div>
-                            {errors.email && (
-                                <p className="text-red-500 text-xs font-medium mt-1.5 flex items-center gap-1">
-                                    <span>✕</span> {errors.email}
-                                </p>
-                            )}
+                            {errors.email && <p className="text-[9px] text-red-400 font-bold ml-1">{errors.email}</p>}
                         </div>
 
                         {/* Password Input */}
-                        <div className="form-group">
-                            <label htmlFor="password" className="form-label">Password</label>
-                            <div className="relative">
-                                <FaLock className="absolute left-4 top-3.5 text-gray-400" />
+                        <div className="space-y-1.5">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Password</label>
+                            <div className="relative group">
+                                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors" />
                                 <input
-                                    id="password"
                                     name="password"
                                     type="password"
-                                    required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className={`input-field pl-11 focus:ring-indigo-500 ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
+                                    className={`w-full bg-white/5 border ${errors.password ? 'border-red-500/50' : 'border-white/10'} focus:border-purple-500/50 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white transition-all outline-none`}
                                     placeholder="••••••••"
                                 />
                             </div>
-                            {errors.password && (
-                                <p className="text-red-500 text-xs font-medium mt-1.5 flex items-center gap-1">
-                                    <span>✕</span> {errors.password}
-                                </p>
-                            )}
-                        </div>
-                        
-
-                        {/* Remember & Forgot */}
-                        <div className="flex items-center justify-between text-xs">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                                <span className="text-gray-600 font-medium">Remember me</span>
-                            </label>
-                            <a href="#" className="text-indigo-600 hover:text-indigo-700 font-medium">
-                                Forgot password?
-                            </a>
+                            {errors.password && <p className="text-[9px] text-red-400 font-bold ml-1">{errors.password}</p>}
                         </div>
 
-                        {/* Sign In Button */}
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full btn-primary py-3 font-semibold shadow-lg hover:shadow-xl ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className="w-full relative group overflow-hidden py-4 rounded-xl font-black text-[10px] md:text-xs tracking-[0.2em] text-white transition-all active:scale-95 disabled:opacity-50"
                         >
-                            {loading ? (
-                                <span className="flex items-center gap-2">
-                                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Signing in...
-                                </span>
-                            ) : (
-                                'Sign In'
-                            )}
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all"></div>
+                            <span className="relative flex items-center justify-center gap-2 uppercase">
+                                {loading ? 'INITIATING...' : 'ACCESS DASHBOARD'} <FaArrowRight className="text-[10px]" />
+                            </span>
                         </button>
                     </form>
 
                     {/* Divider */}
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200" />
-                        </div>
-                        <div className="relative flex justify-center text-xs">
-                            <span className="px-3 bg-white text-gray-600 font-medium">
-                                Or continue with
-                            </span>
+                    <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
+                        <div className="relative flex justify-center text-[8px] md:text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
+                            <span className="px-4 bg-[#070b14]">External Uplink</span>
                         </div>
                     </div>
 
-                    {/* OAuth Buttons */}
-                    <div className="grid grid-cols-2 gap-3">
+                    {/* OAuth Buttons: Responsive Grid */}
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
                         <a
                             href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`}
-                            className="flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-300 font-medium text-sm text-gray-700"
+                            className="flex items-center justify-center gap-3 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-all font-bold text-[11px] text-slate-300"
                         >
-                            <FcGoogle class="h-5 w-5" />
-                            <span className="hidden sm:inline">Google</span>
+                            <FcGoogle className="text-base" /> Google
                         </a>
                         <a
                             href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/github`}
-                            className="flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-200 rounded-lg hover:border-gray-800 hover:bg-gray-100 transition-all duration-300 font-medium text-sm text-gray-700"
+                            className="flex items-center justify-center gap-3 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-all font-bold text-[11px] text-slate-300"
                         >
-                            <FaGithub className="h-5 w-5" />
-                            <span className="hidden sm:inline">GitHub</span>
+                            <FaGithub className="text-base" /> GitHub
                         </a>
-                    </div>
-
-                    {/* Sign Up Link */}
-                    <div className="text-center pt-2 border-t border-gray-100">
-                        <p className="text-sm text-gray-600">
-                            Don't have an account?{' '}
-                            <Link
-                                to="/register"
-                                className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors"
-                            >
-                                Create one
-                            </Link>
-                        </p>
                     </div>
                 </div>
 
-                {/* Info Section */}
-                <p className="text-xs text-center text-gray-500">
-                    By signing in, you agree to our{' '}
-                    <a href="#" className="text-indigo-600 hover:underline">
-                        Terms of Service
-                    </a>
-                </p>
+                {/* Footer Link */}
+                <div className="text-center mt-8">
+                    <p className="text-xs text-slate-500">
+                        New to the network?{' '}
+                        <Link to="/register" className="font-bold text-purple-400 hover:text-purple-300 transition-colors underline underline-offset-4">
+                            Initialize Account
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     );

@@ -11,19 +11,14 @@ import {
   Pie,
   Cell,
   LineChart,
-  Line
+  Line,
+  CartesianGrid
 } from 'recharts';
 import { getDashboardStats } from '../../api/analyticsApi';
 import Loader from '../common/Loader';
 
-// const COLORS = ['#6366F1', '#8B5CF6', '#06B6D4', '#F59E0B', '#EF4444'];
-const COLORS = [
-  '#4F46E5', // Indigo
-  '#0EA5E9', // Sky Blue
-  '#10B981', // Emerald
-  '#F59E0B', // Amber
-  '#EF4444'  // Soft Red
-];
+// Neural Theme Colors
+const COLORS = ['#8B5CF6', '#6366F1', '#0EA5E9', '#10B981', '#F43F5E'];
 
 const AnalyticsChart = ({
   data,
@@ -56,9 +51,7 @@ const AnalyticsChart = ({
         let mapped = last7.map((d) => {
           const dateObj = new Date(d.date);
           return {
-            label: isNaN(dateObj)
-              ? d.date
-              : formatter.format(dateObj),
+            label: isNaN(dateObj) ? d.date : formatter.format(dateObj),
             value: series === 'lines' ? d.lines : d.projects,
             projects: d.projectList || []
           };
@@ -79,7 +72,7 @@ const AnalyticsChart = ({
 
         setChartData(mapped);
       } catch (err) {
-        setError('Failed to load analytics');
+        setError('Failed to load neural analytics');
       } finally {
         setLoading(false);
       }
@@ -88,31 +81,44 @@ const AnalyticsChart = ({
     fetchStats();
   }, [data, series]);
 
-  if (loading) return <Loader />;
+  /* =========================
+      THEME STYLES
+  ==========================*/
+  const axisStyle = {
+    fontSize: '9px',
+    fontWeight: '700',
+    fill: '#64748b',
+    fontFamily: 'Inter, sans-serif'
+  };
 
-  if (error) {
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload) return null;
+    const visible = payload.filter((p) => p.value > 0);
+
     return (
-      <div className="bg-white p-4 rounded-lg shadow-md text-center">
-        <p className="text-red-500 text-sm">{error}</p>
+      <div className="bg-slate-900/95 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-2xl z-50">
+        <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 border-b border-white/5 pb-1">
+          {label}
+        </div>
+        {visible.map((p, i) => (
+          <div key={i} className="flex justify-between items-center gap-4 py-0.5">
+            <span className="text-[10px] font-bold text-slate-200">{p.name}:</span>
+            <span className="text-[10px] font-black" style={{ color: p.stroke || p.fill || '#fff' }}>
+              {p.value.toLocaleString()}
+            </span>
+          </div>
+        ))}
+        {!visible.length && <div className="text-[9px] text-slate-600 italic font-medium">No activity logged</div>}
       </div>
     );
-  }
-
-  if (!chartData.length) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md text-center">
-        <p className="text-gray-500 text-sm">No analytics data</p>
-      </div>
-    );
-  }
+  };
 
   /* =========================
-     LINE CHART LOGIC
+      CHART BUILDERS
   ==========================*/
 
   const buildLineChart = () => {
     const projectMap = {};
-
     chartData.forEach((d) => {
       (d.projects || []).forEach((p) => {
         if (!projectMap[p.title]) {
@@ -122,146 +128,126 @@ const AnalyticsChart = ({
     });
 
     const projectList = Object.keys(projectMap)
-      .map((title) => ({
-        title,
-        key: projectMap[title]
-      }))
-      // 🔥 remove projects with all zero values
+      .map((title) => ({ title, key: projectMap[title] }))
       .filter((project) =>
         chartData.some((d) =>
-          (d.projects || []).some(
-            (p) =>
-              p.title === project.title &&
-              p.lines > 0
-          )
+          (d.projects || []).some((p) => p.title === project.title && p.lines > 0)
         )
       );
 
-    // fallback single line
-    if (!projectList.length) {
-      return (
-        <LineChart data={chartData}>
-          <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke="#8B5CF6"
-            strokeWidth={2}
-            dot={{ r: 3 }}
-          />
-        </LineChart>
-      );
-    }
-
+    // Dynamic data transformation for multi-line support
     const transformed = chartData.map((d) => {
       const row = { label: d.label };
-
       projectList.forEach((p) => {
-        const found = (d.projects || []).find(
-          (x) => x.title === p.title
-        );
+        const found = (d.projects || []).find((x) => x.title === p.title);
         row[p.key] = found ? found.lines : 0;
       });
-
       return row;
     });
 
-    const CustomTooltip = ({ active, payload, label }) => {
-      if (!active || !payload) return null;
-
-      const visible = payload.filter((p) => p.value > 0);
-      if (!visible.length) return null;
-
-      return (
-        <div className="bg-white p-2 rounded shadow text-sm">
-          <div className="font-semibold mb-1">{label}</div>
-          {visible.map((p, i) => (
-            <div
-              key={i}
-              className="flex justify-between items-center"
-            >
-              <span>{p.name}</span>
-              <span>{p.value}</span>
-            </div>
-          ))}
-        </div>
-      );
-    };
+    const displayData = projectList.length > 0 ? transformed : chartData;
 
     return (
-      <LineChart data={transformed}>
-        <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-        <YAxis />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend />
-        {projectList.map((p, i) => (
+      <LineChart data={displayData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+        <XAxis dataKey="label" axisLine={false} tickLine={false} tick={axisStyle} interval="preserveStartEnd" minTickGap={15} />
+        <YAxis axisLine={false} tickLine={false} tick={axisStyle} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#ffffff10', strokeWidth: 2 }} />
+        <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase' }} />
+        
+        {projectList.length > 0 ? (
+          projectList.map((p, i) => (
+            <Line
+              key={p.key}
+              type="monotone"
+              dataKey={p.key}
+              name={p.title}
+              stroke={COLORS[i % COLORS.length]}
+              strokeWidth={3}
+              dot={{ r: 3, strokeWidth: 2, stroke: '#030712', fill: COLORS[i % COLORS.length] }}
+              activeDot={{ r: 5, strokeWidth: 0 }}
+            />
+          ))
+        ) : (
           <Line
-            key={p.key}
             type="monotone"
-            dataKey={p.key}
-            name={p.title}
-            stroke={COLORS[i % COLORS.length]}
-            strokeWidth={2}
-            dot={{ r: 3 }}
+            dataKey="value"
+            name={series === 'lines' ? 'Lines' : 'Projects'}
+            stroke="#8B5CF6"
+            strokeWidth={3}
+            dot={{ r: 3, fill: '#8B5CF6', strokeWidth: 2, stroke: '#030712' }}
           />
-        ))}
+        )}
       </LineChart>
     );
   };
 
-  /* =========================
-     RENDER
-  ==========================*/
+  if (loading) return <div className="h-[250px] flex items-center justify-center"><Loader /></div>;
+
+  if (error || !chartData.length) {
+    return (
+      <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 rounded-3xl text-center">
+        <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">
+          {error || 'No Neural Data Found'}
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">
-        {title}
-      </h3>
+    <div className="relative group overflow-hidden bg-slate-900/40 backdrop-blur-xl border border-white/10 p-4 md:p-6 rounded-[2rem] shadow-2xl transition-all hover:border-white/20">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/10 blur-[100px] rounded-full"></div>
+      </div>
 
-      <div style={{ width: '100%', height: 220 }}>
-        <ResponsiveContainer>
-          {type === 'line' ? (
-            buildLineChart()
-          ) : type === 'bar' ? (
-            <BarChart data={chartData}>
-              <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          ) : (
-            <PieChart>
-              <Pie
-                data={chartData}
-                dataKey="value"
-                nameKey="label"
-                innerRadius={40}
-                outerRadius={70}
-              >
-                {chartData.map((_, index) => (
-                  <Cell
-                    key={index}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          )}
-        </ResponsiveContainer>
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h3 className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
+            {title}
+          </h3>
+          <div className="flex gap-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+        </div>
+
+        <div style={{ width: '100%', height: 250 }}>
+          <ResponsiveContainer>
+            {type === 'line' ? (
+              buildLineChart()
+            ) : type === 'bar' ? (
+              <BarChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={axisStyle} />
+                <YAxis axisLine={false} tickLine={false} tick={axisStyle} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff05' }} />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase' }} />
+                <Bar dataKey="value" name={series === 'lines' ? 'Lines' : 'Projects'} radius={[4, 4, 0, 0]}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.8} />
+                  ))}
+                </Bar>
+              </BarChart>
+            ) : (
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="label"
+                  innerRadius={50}
+                  outerRadius={70}
+                  paddingAngle={5}
+                >
+                  {chartData.map((_, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} stroke="transparent" />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px', fontSize: '9px', fontWeight: 'bold' }} />
+              </PieChart>
+            )}
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

@@ -3,18 +3,15 @@ import { getUserReadmes, deleteReadme } from '../api/entityApi';
 import { getDashboardStats } from '../api/analyticsApi';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaPlus, FaGithub, FaHistory, FaTrash, FaEdit, FaCrown } from 'react-icons/fa';
+import { FaPlus, FaGithub, FaHistory, FaTrash, FaEdit, FaCrown, FaTerminal, FaRobot, FaExternalLinkAlt } from 'react-icons/fa';
 import Loader from '../components/common/Loader';
-import AnalyticsChart from '../components/charts/AnalyticsChart';
 
 const Dashboard = () => {
-     const { user } = useAuth(); 
+    const { user } = useAuth(); 
     const [stats, setStats] = useState({ totalReadmes: 0, totalLines: 0, recentActivity: [] });
     const [readmes, setReadmes] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const isProUser = user?.isPro === true;
-    const freeLimit = 2;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,12 +24,10 @@ const Dashboard = () => {
                 setReadmes(readmesData);
             } catch (err) {
                 console.error("Failed to fetch dashboard data", err);
-                setError("Failed to load dashboard data");
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, []);
 
@@ -41,10 +36,8 @@ const Dashboard = () => {
             try {
                 await deleteReadme(id);
                 setReadmes(readmes.filter(r => r._id !== id));
-                // Update stats locally or refetch
                 setStats(prev => ({ ...prev, totalReadmes: prev.totalReadmes - 1 }));
             } catch (err) {
-                console.error("Failed to delete readme", err);
                 alert("Failed to delete README");
             }
         }
@@ -53,158 +46,142 @@ const Dashboard = () => {
     if (loading) return <Loader />;
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="mb-8 flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                        Welcome back, {user?.name}!
-                    </h1>
-                    <p className="mt-2 text-gray-600">
-                        Manage your README projects and create new ones
-                    </p>
-                </div>
-                <div className="flex items-center">
-                    <Link
-                        to="/create"
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-                    >
-                        <FaPlus className="mr-2" /> Create New
-                    </Link>
-                    {!isProUser && (
+        <div className="min-h-screen bg-[#030712] text-slate-200 relative overflow-x-hidden font-sans">
+            {/* Background Decorations */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="stars-small opacity-40"></div>
+                <div className="absolute top-[-15%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-900/10 blur-[120px] rounded-full"></div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 relative z-10">
+                
+                {/* Header Section: Optimized for Stacking */}
+                <div className="mb-10 flex flex-col md:flex-row items-center md:items-end justify-between gap-6 text-center md:text-left">
+                    <div>
+                        <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                            <FaRobot className="text-purple-500 animate-pulse" />
+                            <span className="text-[9px] md:text-[10px] font-black tracking-[0.3em] uppercase text-purple-400/80">AI ReadME Dashboard</span>
+                        </div>
+                        <h1 className="text-3xl md:text-5xl font-black bg-gradient-to-r from-white via-slate-300 to-slate-500 bg-clip-text text-transparent tracking-tighter leading-tight">
+                            {user?.name ? `Welcome, ${user.name.split(' ')[0]}` : 'Initializing...'}
+                        </h1>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                         <Link
-                            to="/upgrade"
-                            className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-500 hover:bg-yellow-600"
+                            to="/create"
+                            className="w-full sm:w-auto group relative inline-flex items-center justify-center px-8 py-3 rounded-full bg-indigo-600 font-bold text-white transition-all hover:bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.4)]"
                         >
-                            <FaCrown className="mr-2" /> Upgrade
+                            <FaPlus className="mr-2 group-hover:rotate-90 transition-transform duration-300" /> 
+                            New Project
                         </Link>
-                    )}
-                </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-                                <FaHistory className="h-6 w-6 text-white" />
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                        Total READMEs
-                                    </dt>
-                                    <dd className="text-3xl font-semibold text-gray-900">
-                                        {stats.totalReadmes}
-                                    </dd>
-                                    {!isProUser && (
-  <p className="mt-2 text-xs text-amber-600 font-medium">
-    Free plan: You can create only {freeLimit} READMEs
-  </p>)}
-                                </dl>
-                            </div>
-                        </div>
+                        {!isProUser && (
+                            <Link to="/upgrade" className="w-full sm:w-auto p-[1px] rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
+                                <div className="px-6 py-2.5 rounded-full bg-[#030712] flex items-center justify-center gap-2">
+                                    <FaCrown className="text-yellow-500" />
+                                    <span className="text-md font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Pro</span>
+                                </div>
+                            </Link>
+                        )}
                     </div>
                 </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
-                                <span className="text-white font-bold text-xl">lines</span>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                        Total Lines Generated
-                                    </dt>
-                                    <dd className="text-3xl font-semibold text-gray-900">
-                                        {stats.totalLines}
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-10">
+                    <StatCard title="Total READMEs" value={stats.totalReadmes} icon={<FaHistory />} color="from-purple-500 to-indigo-600" />
+                    <StatCard title="Lines Generated" value={stats.totalLines.toLocaleString()} icon={<FaTerminal />} color="from-blue-500 to-cyan-500" />
+                    <StatCard title="GitHub Sync" value={user?.githubUsername || "Not Linked"} icon={<FaGithub />} color="from-slate-700 to-slate-900" isStatus={true} />
                 </div>
 
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0 bg-gray-800 rounded-md p-3">
-                                <FaGithub className="h-6 w-6 text-white" />
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                        GitHub Status
-                                    </dt>
-                                    <dd className="mt-1 flex items-center text-lg font-semibold text-gray-900">
-                                        {user?.githubUsername ? (
-                                            <span className="text-green-600 flex items-center text-sm bg-green-50 px-2 py-1 rounded-full">
-                                                <span className="h-2 w-2 bg-green-500 rounded-full mr-2"></span>
-                                                Connected as {user.githubUsername}
+                {/* Projects Section */}
+                <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl">
+                    <div className="px-6 md:px-8 py-5 md:py-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                        <h2 className="text-lg md:text-xl font-bold text-white">Project History</h2>
+                        <div className="h-2 w-2 bg-green-500 rounded-full shadow-[0_0_10px_#22c55e]"></div>
+                    </div>
+
+                    {/* DESKTOP TABLE: Hidden on mobile */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead>
+                                <tr className="text-slate-500 text-[11px] uppercase tracking-[0.2em] font-bold">
+                                    <th className="px-8 py-5">Name</th>
+                                    <th className="px-8 py-5">Access</th>
+                                    <th className="px-8 py-5">Date</th>
+                                    <th className="px-8 py-5 text-right">Settings</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {readmes.map((readme) => (
+                                    <tr key={readme._id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <td className="px-8 py-6 font-bold text-slate-100">{readme.title}</td>
+                                        <td className="px-8 py-6">
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${readme.isPublic ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-slate-800 text-slate-400'}`}>
+                                                {readme.isPublic ? 'Public' : 'Private'}
                                             </span>
-                                        ) : (
-                                            <a
-                                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/github`}
-                                                className="text-indigo-600 hover:text-indigo-900 text-sm font-medium flex items-center"
-                                            >
-                                                Connect Now &rarr;
-                                            </a>
-                                        )}
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
+                                        </td>
+                                        <td className="px-8 py-6 text-sm text-slate-400">{new Date(readme.createdAt).toLocaleDateString()}</td>
+                                        <td className="px-8 py-6 text-right">
+                                            <div className="flex gap-4 justify-end opacity-40 group-hover:opacity-100 transition-opacity">
+                                                <Link to={`/edit/${readme._id}`} className="hover:text-purple-400"><FaEdit /></Link>
+                                                <button onClick={() => handleDelete(readme._id)} className="hover:text-red-400"><FaTrash /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            </div>
 
-            {/* Recent READMEs */}
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Your READMEs</h2>
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                <ul className="divide-y divide-gray-200">
-                    {readmes.length === 0 ? (
-                        <li className="px-6 py-4 text-center text-gray-500">
-                            No READMEs found. Create your first one!
-                        </li>
-                    ) : (
-                        readmes.map((readme) => (
-                            <li key={readme._id}>
-                                <div className="px-4 py-4 sm:px-6 hover:bg-gray-50 flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <div className="text-sm font-medium text-indigo-600 truncate mr-4">
-                                            {readme.title}
+                    {/* MOBILE LIST VIEW: Visible only on mobile */}
+                    <div className="block md:hidden divide-y divide-white/5">
+                        {readmes.length === 0 ? (
+                            <div className="p-10 text-center text-slate-500">No data sequences found.</div>
+                        ) : (
+                            readmes.map((readme) => (
+                                <div key={readme._id} className="p-5 flex flex-col gap-4">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="font-bold text-slate-100 mb-1">{readme.title}</h3>
+                                            <p className="text-[10px] text-slate-500 uppercase tracking-widest">{new Date(readme.createdAt).toLocaleDateString()}</p>
                                         </div>
-                                        <div className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase ${readme.isPublic ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-slate-800 text-slate-400'}`}>
                                             {readme.isPublic ? 'Public' : 'Private'}
-                                        </div>
+                                        </span>
                                     </div>
-                                    <div className="flex items-center space-x-4">
-                                        <div className="text-sm text-gray-500">
-                                            {new Date(readme.createdAt).toLocaleDateString()}
-                                        </div>
-                                        <Link
-                                            to={`/edit/${readme._id}`}
-                                            className="text-indigo-600 hover:text-indigo-900"
-                                        >
-                                            <FaEdit />
+                                    <div className="flex gap-2">
+                                        <Link to={`/edit/${readme._id}`} className="flex-1 flex justify-center items-center gap-2 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-purple-400">
+                                            <FaEdit size={12}/> Edit
                                         </Link>
-                                        <button
-                                            onClick={() => handleDelete(readme._id)}
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            <FaTrash />
+                                        <button onClick={() => handleDelete(readme._id)} className="flex-1 flex justify-center items-center gap-2 py-3 bg-red-500/5 border border-red-500/10 rounded-xl text-xs font-bold text-red-400">
+                                            <FaTrash size={12}/> Delete
                                         </button>
                                     </div>
                                 </div>
-                            </li>
-                        ))
-                    )}
-                </ul>
+                            ))
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
+
+const StatCard = ({ title, value, icon, color, isStatus }) => (
+    <div className="relative group overflow-hidden bg-slate-900/50 backdrop-blur-md border border-white/10 p-5 md:p-6 rounded-2xl md:rounded-3xl transition-all">
+        <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl md:rounded-2xl bg-gradient-to-br ${color} text-white shadow-lg`}>
+                {icon}
+            </div>
+            <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest truncate">{title}</p>
+                <p className={`text-xl md:text-2xl font-black mt-1 truncate ${isStatus && value !== 'Not Linked' ? 'text-green-400' : 'text-white'}`}>
+                    {value}
+                </p>
+            </div>
+        </div>
+    </div>
+);
 
 export default Dashboard;

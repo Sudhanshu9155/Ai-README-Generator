@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import RepoSelector from './RepoSelector';
-import { FaGithub } from 'react-icons/fa';
-
+import { FaGithub, FaMagic, FaTerminal, FaCode } from 'react-icons/fa';
 
 const ReadmeForm = ({ onSubmit, initialData = {}, isGenerating = false }) => {
     const [formData, setFormData] = useState({
@@ -16,7 +15,6 @@ const ReadmeForm = ({ onSubmit, initialData = {}, isGenerating = false }) => {
     const [showRepoSelector, setShowRepoSelector] = useState(false);
     const { user } = useAuth();
 
-    // Sync state with initialData when it changes (e.g. key change or parent update)
     useEffect(() => {
         if (initialData && Object.keys(initialData).length > 0) {
             setFormData(prev => ({
@@ -33,10 +31,7 @@ const ReadmeForm = ({ onSubmit, initialData = {}, isGenerating = false }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleRepoSelect = (repoData) => {
@@ -45,35 +40,33 @@ const ReadmeForm = ({ onSubmit, initialData = {}, isGenerating = false }) => {
             title: repoData.title,
             description: repoData.description,
             techStack: repoData.techStack.join(', '),
-            features: "Analysis pending features...", // Or leave empty if analysis doesn't give features
+            features: "Analysis pending features...",
             repoUrl: repoData.repoUrl,
-            isPublic: true // Likely want it public if from GH
+            isPublic: true
         }));
         setShowRepoSelector(false);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Convert comma-separated strings to arrays if needed by backend, 
-        // but backend logic (step 38) expects arrays for techStack and features.
-        // Let's pass them as arrays.
-
         const processedData = {
-            title: formData.title,
-            description: formData.description,
-            repoUrl: formData.repoUrl,
-            isPublic: formData.isPublic,
+            ...formData,
             techStack: typeof formData.techStack === 'string' ? formData.techStack.split(',').map(s => s.trim()).filter(Boolean) : formData.techStack,
             features: typeof formData.features === 'string' ? formData.features.split('\n').map(s => s.trim()).filter(Boolean) : formData.features
         };
-
         onSubmit(processedData);
     };
 
+    // Shared Tailwind Styles for AI Dark Theme
+    const inputStyle = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500/40 transition-all outline-none";
+    const labelStyle = "flex items-center gap-2 text-sm font-bold text-slate-300 mb-2 uppercase tracking-widest";
+
     if (showRepoSelector) {
         return (
-            <div className="card space-y-6">
-                <h2 className="text-xl font-bold mb-4">Select Repository</h2>
+            <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl">
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    <FaGithub className="text-purple-400" /> Select Repository
+                </h2>
                 <RepoSelector
                     onSelect={handleRepoSelect}
                     onCancel={() => setShowRepoSelector(false)}
@@ -83,12 +76,12 @@ const ReadmeForm = ({ onSubmit, initialData = {}, isGenerating = false }) => {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="card space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
             {/* Title Field */}
-            <div className="form-group">
-                <label className="form-label">
-                    Project Title
-                    <span className="text-red-500 ml-1">*</span>
+            <div className="relative group">
+                <label className={labelStyle}>
+                    <FaTerminal className="text-purple-500 text-xs" /> Project Title 
+                    <span className="text-purple-500">*</span>
                 </label>
                 <input
                     type="text"
@@ -96,44 +89,42 @@ const ReadmeForm = ({ onSubmit, initialData = {}, isGenerating = false }) => {
                     required
                     value={formData.title}
                     onChange={handleChange}
-                    className="input-field"
-                    placeholder="e.g. My Awesome Project"
+                    className={inputStyle}
+                    placeholder="e.g. Neural-Compute-Engine"
                 />
-                <p className="form-hint">Give your project a unique and descriptive name</p>
             </div>
 
             {/* Description Field */}
-            <div className="form-group">
-                <label className="form-label">Description</label>
+            <div>
+                <label className={labelStyle}>Description</label>
                 <textarea
                     name="description"
                     rows="3"
                     value={formData.description}
                     onChange={handleChange}
-                    className="textarea-field"
-                    placeholder="Briefly describe what your project does..."
+                    className={`${inputStyle} resize-none`}
+                    placeholder="Briefly describe the purpose of this project..."
                 />
-                <p className="form-hint">Max 500 characters recommended</p>
             </div>
 
             {/* Tech Stack Field */}
-            <div className="form-group">
-                <label className="form-label">
-                    Tech Stack
-                    <span className="text-gray-400 font-normal text-xs ml-2">(comma separated)</span>
+            <div>
+                <label className={labelStyle}>
+                    <FaCode className="text-blue-400 text-xs" /> Tech Stack 
+                    <span className="text-[10px] text-slate-500 font-medium ml-auto">COMMA SEPARATED</span>
                 </label>
                 <input
                     type="text"
                     name="techStack"
                     value={formData.techStack}
                     onChange={handleChange}
-                    className="input-field"
-                    placeholder="React, Node.js, MongoDB, Tailwind..."
+                    className={`${inputStyle} resize-none`}
+                    placeholder="React, Node.js, Tailwind..."
                 />
                 <div className="flex flex-wrap gap-2 mt-3">
                     {formData.techStack.split(',').map((tech, idx) => (
                         tech.trim() && (
-                            <span key={idx} className="badge-primary text-xs">
+                            <span key={idx} className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-bold uppercase tracking-tighter">
                                 {tech.trim()}
                             </span>
                         )
@@ -142,118 +133,103 @@ const ReadmeForm = ({ onSubmit, initialData = {}, isGenerating = false }) => {
             </div>
 
             {/* Key Features Field */}
-            <div className="form-group">
-                <label className="form-label">
-                    Key Features
-                    <span className="text-gray-400 font-normal text-xs ml-2">(one per line)</span>
-                </label>
+            <div>
+                <label className={labelStyle}>Key Features</label>
                 <textarea
                     name="features"
-                    rows="5"
+                    rows="4"
                     value={formData.features}
                     onChange={handleChange}
-                    className="textarea-field font-mono text-sm"
-                    placeholder="- User Authentication&#10;- Real-time updates&#10;- Responsive Design"
+                    className={`${inputStyle} resize-none font-mono text-xs leading-relaxed`}
+                    placeholder="- Secure JWT Auth&#10;- Real-time Socket sync&#10;- Dark Mode support"
                 />
             </div>
 
-            {/* Repository URL or Selection */}
-            <div className="form-group">
-                <label className="form-label">Repository</label>
+            {/* Repository Section */}
+            <div className="pt-4 border-t border-white/5">
+                <label className={labelStyle}>Source Repository</label>
                 {user?.githubUsername ? (
-                    <div className="space-y-3">
-                        {formData.repoUrl ? (
-                            <div className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                                <div className="flex items-center space-x-3">
-                                    <FaGithub className="text-gray-700 text-xl" />
-                                    <div>
-                                        <p className="font-medium text-gray-900 truncate max-w-xs">{formData.repoUrl}</p>
-                                        <p className="text-xs text-green-600 font-semibold">✓ Connected</p>
-                                    </div>
+                    <div className="relative group cursor-pointer" onClick={() => setShowRepoSelector(true)}>
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+                        <div className="relative flex items-center justify-between p-4 bg-slate-900 border border-white/10 rounded-xl">
+                            <div className="flex items-center space-x-4">
+                                <div className="p-2 bg-white/5 rounded-lg text-white">
+                                    <FaGithub size={20} />
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowRepoSelector(true)}
-                                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
-                                >
-                                    Change
-                                </button>
+                                <div>
+                                    <p className="text-sm font-bold text-white truncate max-w-[200px] md:max-w-xs">
+                                        {formData.repoUrl || 'No repository linked'}
+                                    </p>
+                                    <p className="text-[10px] text-emerald-400 font-black tracking-widest uppercase">
+                                        {formData.repoUrl ? '✓ Data Synced' : 'Ready to link'}
+                                    </p>
+                                </div>
                             </div>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={() => setShowRepoSelector(true)}
-                                className="w-full flex items-center justify-center space-x-2 p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-500 hover:text-indigo-600 transition-colors bg-gray-50 hover:bg-white"
-                            >
-                                <FaGithub className="text-xl" />
-                                <span className="font-medium">Select Repository from GitHub</span>
-                            </button>
-                        )}
-                        <p className="form-hint">Select a repository to automatically analyze and fill details</p>
+                            <span className="text-xs font-bold text-purple-400">CHANGE</span>
+                        </div>
                     </div>
                 ) : (
-                    <div className="flex rounded-lg overflow-hidden shadow-sm border border-gray-200 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent">
-                        <input
-                            type="url"
-                            name="repoUrl"
-                            value={formData.repoUrl}
-                            onChange={handleChange}
-                            className="flex-1 block w-full px-4 py-2.5 bg-white border-0 focus:outline-none focus:ring-0 sm:text-sm"
-                            placeholder="https://github.com/username/repo"
-                        />
-                    </div>
+                    <input
+                        type="url"
+                        name="repoUrl"
+                        value={formData.repoUrl}
+                        onChange={handleChange}
+                        className={inputStyle}
+                        placeholder="https://github.com/username/repo"
+                    />
                 )}
             </div>
 
-            {/* Public Toggle */}
-            <div className="flex items-center gap-3 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-                <input
-                    id="isPublic"
-                    name="isPublic"
-                    type="checkbox"
-                    checked={formData.isPublic}
-                    onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
-                    className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-indigo-300 rounded cursor-pointer transition-colors"
-                />
-                <label htmlFor="isPublic" className="text-sm text-gray-800 font-medium cursor-pointer flex-1">
-                    <span className="block font-semibold text-gray-900">Make Public</span>
-                    <span className="text-xs text-gray-600">Allow others to view and share this README</span>
+            {/* Public Toggle - Modernized */}
+            <div className="flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 group hover:bg-white/[0.08] transition-all">
+                <div className="relative inline-flex items-center cursor-pointer">
+                    <input
+                        id="isPublic"
+                        type="checkbox"
+                        checked={formData.isPublic}
+                        onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
+                        className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                </div>
+                <label htmlFor="isPublic" className="flex-1 cursor-pointer">
+                    <span className="block font-bold text-white text-sm">Deploy to Public History</span>
+                    <span className="text-xs text-slate-500">Allow other developers to view your README structure</span>
                 </label>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end gap-3 pt-4">
+            {/* Submit Action Area */}
+            <div className="flex items-center justify-end gap-4 pt-6">
                 <button
                     type="button"
-                    className="btn-outline"
+                    className="px-6 py-3 text-slate-400 font-bold text-sm hover:text-white transition-colors"
                     onClick={() => window.history.back()}
                 >
-                    Cancel
+                    Discard
                 </button>
                 <button
                     type="submit"
                     disabled={isGenerating}
-                    className={`btn-primary flex items-center gap-2 ${isGenerating ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`relative group px-8 py-3 rounded-xl font-black text-sm tracking-tighter text-white transition-all overflow-hidden ${isGenerating ? 'cursor-not-allowed' : 'hover:scale-105 active:scale-95'}`}
                 >
-                    {isGenerating ? (
-                        <>
-                            <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span>Generating AI Content...</span>
-                        </>
-                    ) : (
-                        <>
-                            <span>✨</span>
-                            <span>Generate README</span>
-                        </>
-                    )}
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600"></div>
+                    <div className="relative flex items-center gap-2">
+                        {isGenerating ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                <span>SYNTHESIZING...</span>
+                            </>
+                        ) : (
+                            <>
+                                <FaMagic className="text-xs" />
+                                <span>GENERATE README</span>
+                            </>
+                        )}
+                    </div>
                 </button>
             </div>
         </form>
     );
 };
-
 
 export default ReadmeForm;

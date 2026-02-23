@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createOrder, verifyPayment } from '../api/paymentApi';
-import { FaCrown, FaCheck } from 'react-icons/fa';
+import { FaCrown, FaCheck, FaStar } from 'react-icons/fa';
+import Loader from '../components/common/Loader';
 
 const Upgrade = () => {
     const { user, checkAuth } = useAuth();
@@ -23,7 +24,6 @@ const Upgrade = () => {
 
     const handlePayment = async () => {
         setLoading(true);
-
         const res = await loadRazorpay();
         if (!res) {
             alert('Razorpay SDK failed to load.');
@@ -33,7 +33,6 @@ const Upgrade = () => {
 
         try {
             const order = await createOrder();
-
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: order.amount,
@@ -52,7 +51,7 @@ const Upgrade = () => {
                     name: user?.name,
                     email: user?.email,
                 },
-                theme: { color: '#4F46E5' }
+                theme: { color: '#8b5cf6' }
             };
 
             const paymentObject = new window.Razorpay(options);
@@ -64,90 +63,108 @@ const Upgrade = () => {
         }
     };
 
+    const PlanFeature = ({ text, active }) => (
+        <li className="flex items-center gap-3 text-xs md:text-sm text-slate-300 font-medium">
+            <div className={`p-1 rounded-full shrink-0 ${active ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-slate-600'}`}>
+                <FaCheck size={10} />
+            </div>
+            {text}
+        </li>
+    );
+
+    if (loading) return <div className="min-h-screen bg-[#030712] flex items-center justify-center"><Loader /></div>;
+
     return (
-        <div className="max-w-5xl mx-auto py-12 px-4">
-            <h1 className="text-3xl font-bold text-center mb-10">
-                Choose Your Plan
-            </h1>
+        <div className="min-h-screen bg-[#030712] text-slate-200 relative overflow-x-hidden py-10 md:py-20 px-4 md:px-8">
+            {/* Background Animations */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="stars-small opacity-20"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/10 blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-purple-500/10 blur-[210px] rounded-full"></div>
+            </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-
-                {/* FREE PLAN */}
-                <div className={`rounded-xl border p-6 shadow-sm 
-                    ${!isProUser ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200'}`}>
-                    
-                    <h2 className="text-xl font-semibold mb-2">Free</h2>
-                    <p className="text-3xl font-bold mb-4">₹0</p>
-
-                    <ul className="space-y-3 text-sm text-gray-600 mb-6">
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500" /> Create up to 2 READMEs
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500" /> Basic analytics
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500" /> GitHub integration
-                        </li>
-                    </ul>
-
-                    {!isProUser && (
-                        <button
-                            disabled
-                            className="w-full bg-gray-200 text-gray-600 py-2 rounded-lg text-sm font-medium"
-                        >
-                            Current Plan
-                        </button>
-                    )}
+            <div className="max-w-5xl mx-auto relative z-10">
+                <div className="text-center mb-10 md:mb-16">
+                    <h1 className="text-3xl md:text-5xl font-black bg-gradient-to-r from-white via-slate-200 to-slate-500 bg-clip-text text-transparent mb-3 tracking-tight">
+                        Choose Your Plan
+                    </h1>
+                    <p className="text-slate-500 font-black uppercase text-[9px] md:text-[10px] tracking-[0.3em]">
+                        Unlock the full potential of AI documentation
+                    </p>
                 </div>
 
-                {/* PRO PLAN */}
-                <div className={`rounded-xl border p-6 shadow-md relative
-                    ${isProUser ? 'border-amber-500 ring-2 ring-amber-200' : 'border-gray-200'}`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch">
 
-                    <div className="absolute top-4 right-4 bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full font-semibold">
-                        MOST POPULAR
+                    {/* STANDARD PLAN */}
+                    <div className={`relative p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-slate-900/40 backdrop-blur-xl border transition-all duration-500 flex flex-col
+                        ${!isProUser ? 'border-purple-500/30 bg-purple-500/[0.02]' : 'border-white/5 opacity-50'}`}>
+                        
+                        <div className="mb-6">
+                            <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Standard</h2>
+                            <p className="text-3xl md:text-4xl font-black text-white">₹0</p>
+                        </div>
+
+                        <ul className="space-y-4 mb-10 flex-1">
+                            <PlanFeature text="Create up to 2 READMEs" active={!isProUser} />
+                            <PlanFeature text="Basic analytics" active={!isProUser} />
+                            <PlanFeature text="GitHub integration" active={!isProUser} />
+                        </ul>
+
+                        {!isProUser ? (
+                            <div className="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-center text-slate-500 font-black text-[10px] tracking-widest uppercase">
+                                Active Plan
+                            </div>
+                        ) : (
+                            <div className="h-12"></div> 
+                        )}
                     </div>
 
-                    <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                        <FaCrown className="text-amber-500" /> Pro
-                    </h2>
+                    {/* PRO PLAN */}
+                    <div className={`relative p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-slate-900/60 backdrop-blur-2xl border-2 transition-all duration-500 flex flex-col
+                        ${isProUser ? 'border-amber-500/40' : 'border-purple-500 shadow-[0_0_40px_rgba(139,92,246,0.15)]'}`}>
 
-                    <p className="text-3xl font-bold mb-4">₹500</p>
+                        {/* Popular Badge for Mobile */}
+                        {!isProUser && (
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest text-white shadow-lg">
+                                Recommended
+                            </div>
+                        )}
 
-                    <ul className="space-y-3 text-sm text-gray-600 mb-6">
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500" /> Unlimited READMEs
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500" /> Advanced analytics
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500" /> Priority support
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <FaCheck className="text-green-500" /> Future premium features
-                        </li>
-                    </ul>
+                        <div className="mb-6">
+                            <h2 className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] mb-1 flex items-center gap-2 justify-center md:justify-start">
+                                <FaCrown className="text-amber-400" /> Pro Access
+                            </h2>
+                            <p className="text-3xl md:text-4xl font-black text-white">₹500</p>
+                        </div>
 
-                    {isProUser ? (
-                        <button
-                            disabled
-                            className="w-full bg-amber-100 text-amber-700 py-2 rounded-lg text-sm font-semibold"
-                        >
-                            You are Pro
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handlePayment}
-                            disabled={loading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold transition"
-                        >
-                            {loading ? 'Processing...' : 'Upgrade to Pro'}
-                        </button>
-                    )}
+                        <ul className="space-y-4 mb-10 flex-1">
+                            <PlanFeature text="Unlimited READMEs" active />
+                            <PlanFeature text="Advanced analytics" active />
+                            <PlanFeature text="Priority Support (24/7)" active />
+                            <PlanFeature text="Early access to new models" active />
+                        </ul>
+
+                        {isProUser ? (
+                            <div className="w-full py-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-center text-amber-500 font-black text-[10px] tracking-widest uppercase">
+                                Pro Status Enabled
+                            </div>
+                        ) : (
+                            <button
+                                onClick={handlePayment}
+                                className="w-full py-5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-black text-[10px] tracking-widest transition-all active:scale-95 shadow-lg shadow-purple-900/20"
+                            >
+                                UPGRADE TO PRO
+                            </button>
+                        )}
+                    </div>
                 </div>
 
+                {/* Secure Payment Note */}
+                <div className="mt-10 text-center">
+                    <p className="flex items-center justify-center gap-2 text-slate-600 text-[9px] font-bold uppercase tracking-widest">
+                        <FaStar className="text-purple-500/40" /> Secure transaction powered by Razorpay
+                    </p>
+                </div>
             </div>
         </div>
     );

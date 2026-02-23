@@ -141,7 +141,16 @@ export const updateProfile = async (req, res) => {
         const user = req.user;
 
         if (name) user.name = name;
-        if (email) user.email = email;
+        if (email && email !== user.email) {
+            const emailExists = await User.findOne({ email });
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email is already taken',
+                });
+            }
+            user.email = email;
+        }
         if (avatar) user.avatar = avatar;
 
         await user.save();

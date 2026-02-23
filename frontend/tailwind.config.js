@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],           // Global body text
+        heading: ['Space Grotesk', 'sans-serif'], // Professional AI headers
+        mono: ['JetBrains Mono', 'monospace'],   // Technical/Data text
+        large: ['Circular', 'sans-serif'],       // Impactful large titles
+      },
       colors: {
         indigo: {
           50: '#eef2ff',
@@ -41,6 +47,7 @@ export default {
         '2xl': ['1.5rem', { lineHeight: '2rem' }],
         '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
         '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1' }],
       },
       fontWeight: {
         thin: '100',
