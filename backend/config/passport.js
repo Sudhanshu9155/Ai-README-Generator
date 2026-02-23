@@ -3,22 +3,12 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as GitHubStrategy } from "passport-github2";
 import User from "../models/User.js";
 
-/*
-|--------------------------------------------------------------------------
-| Helper: Get Base URL (for production or localhost)
-|--------------------------------------------------------------------------
-*/
 
 const BASE_URL =
-  process.env.NODE_ENV === "production"
+  process.env.BACKEND_URL ||
+  (process.env.NODE_ENV === "production"
     ? "https://ai-readme-generator-backend.onrender.com"
-    : "http://localhost:5000";
-
-/*
-|--------------------------------------------------------------------------
-| GOOGLE STRATEGY
-|--------------------------------------------------------------------------
-*/
+    : "http://localhost:5000");
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(
@@ -66,12 +56,6 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 } else {
   console.warn("Google OAuth disabled. Missing credentials.");
 }
-
-/*
-|--------------------------------------------------------------------------
-| GITHUB STRATEGY
-|--------------------------------------------------------------------------
-*/
 
 if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
   passport.use(
@@ -129,12 +113,6 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
 } else {
   console.warn("GitHub OAuth disabled. Missing credentials.");
 }
-
-/*
-|--------------------------------------------------------------------------
-| Serialize / Deserialize
-|--------------------------------------------------------------------------
-*/
 
 passport.serializeUser((user, done) => {
   done(null, user.id);

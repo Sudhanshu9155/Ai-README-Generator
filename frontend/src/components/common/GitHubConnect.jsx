@@ -1,12 +1,13 @@
 import { useAuth } from '../../context/AuthContext';
 import { FaGithub, FaCheckCircle, FaExchangeAlt, FaLink, FaUnlink } from 'react-icons/fa';
+import { getApiBaseUrl } from '../../config/api';
 
 const GitHubConnect = () => {
     const { user } = useAuth();
     const isConnected = !!user?.githubUsername;
 
     const handleConnect = () => {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const apiUrl = getApiBaseUrl();
         window.location.href = `${apiUrl}/auth/github`;
     };
 

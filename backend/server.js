@@ -45,6 +45,17 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get('/auth/:provider', (req, res) => {
+    const { provider } = req.params;
+    res.redirect(302, `/api/auth/${provider}`);
+});
+
+app.get('/auth/:provider/callback', (req, res) => {
+    const { provider } = req.params;
+    const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+    res.redirect(302, `/api/auth/${provider}/callback${query}`);
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/entity', entityRoutes);
 app.use('/api/analytics', analyticsRoutes);

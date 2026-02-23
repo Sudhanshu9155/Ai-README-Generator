@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub, FaUser, FaEnvelope, FaLock, FaRocket, FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { getApiBaseUrl } from '../config/api';
 
 const Register = () => {
     const navigate = useNavigate();
     const { register, error } = useAuth();
+    const apiBaseUrl = getApiBaseUrl();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -237,10 +239,10 @@ const Register = () => {
 
                     {/* OAuth Row: Responsive Grid */}
                     <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
-                        <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`} className="flex items-center justify-center gap-2 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-all font-bold text-[11px] text-slate-300">
+                        <a href={`${apiBaseUrl}/auth/google`} className="flex items-center justify-center gap-2 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-all font-bold text-[11px] text-slate-300">
                             <FcGoogle size={16} /> GOOGLE
                         </a>
-                        <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/github`} className="flex items-center justify-center gap-2 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-all font-bold text-[11px] text-slate-300">
+                        <a href={`${apiBaseUrl}/auth/github`} className="flex items-center justify-center gap-2 py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-all font-bold text-[11px] text-slate-300">
                             <FaGithub size={16} /> GITHUB
                         </a>
                     </div>

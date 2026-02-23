@@ -1,16 +1,18 @@
 import { useEffect } from "react";
 import Loader from "../components/common/Loader";
 import { FaGithub } from "react-icons/fa";
+import { getApiBaseUrl } from "../config/api";
 
 const GitHubCallback = () => {
 
     useEffect(() => {
         const code = new URLSearchParams(window.location.search).get("code");
+        const apiBaseUrl = getApiBaseUrl();
 
         if (code) {
             // Send code to backend
             window.location.href =
-                `${import.meta.env.VITE_API_URL}/auth/github/callback?code=${code}`;
+                `${apiBaseUrl}/auth/github/callback?code=${code}`;
         }
     }, []);
 
