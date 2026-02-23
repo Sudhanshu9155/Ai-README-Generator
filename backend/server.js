@@ -18,10 +18,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// 1. Trust proxy for Render/Heroku (Critical for OAuth callback URLs)
+// 1. Trust proxy for Render (Critical for OAuth)
 app.set('trust proxy', 1);
 
-// 2. Dynamic CORS Configuration
+// 2. CORS Configuration
 const allowedOrigins = [
     process.env.FRONTEND_URL,
     process.env.BACKEND_URL,
@@ -31,7 +31,6 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl) or if in allowed list
         if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
@@ -53,7 +52,7 @@ app.use('/api/activity', activityRoutes);
 app.use('/api/github', githubRoutes);
 app.use('/api/payment', paymentRoutes);
 
-// 4. Legacy/Compatibility Redirects
+// 4. Legacy Redirects
 app.get('/auth/:provider', (req, res) => {
     res.redirect(302, `/api/auth/${req.params.provider}`);
 });
@@ -63,23 +62,27 @@ app.get('/auth/:provider/callback', (req, res) => {
     res.redirect(302, `/api/auth/${req.params.provider}/callback${query}`);
 });
 
-// 5. Serve Frontend Static Files
+// 5. Serve Frontend
 const frontendDistPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(frontendDistPath));
 
-// 6. SPA Routing: Fallback to index.html for ALL other requests
-// This fixes the "Not Found" on reload. We do this LAST.
-app.get('*', (req, res) => {
-    // If it's an API route that fell through, return 404
+// 6. SPA Catch-all (Fixes Reload Error)
+// We use a middleware WITHOUT a string path to avoid Express 5 wildcard crashes
+app.use((req, res, next) => {
+    // Skip if it's an API request
     if (req.url.startsWith('/api')) {
         return res.status(404).json({ success: false, message: 'API Route Not Found' });
     }
 
-    // Otherwise serve the frontend
+    // Serve the index.html for all other routes (SPA fallback)
     const indexPath = path.join(frontendDistPath, 'index.html');
     res.sendFile(indexPath, (err) => {
         if (err) {
-            res.status(404).send("Frontend not built yet. Run 'npm run build'.");
+            // If the file is missing, it means the frontend wasn't built
+            res.status(404).json({
+                success: false,
+                message: 'Frontend not found. Ensure "npm run build" was executed.'
+            });
         }
     });
 });
