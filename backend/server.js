@@ -64,19 +64,20 @@ app.get('/auth/:provider/callback', (req, res) => {
 const frontendDistPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(frontendDistPath));
 
-// Catch-all route to serve index.html for SPA (Fixes Page Not Found on Refresh)
-app.get('/:path*', (req, res, next) => {
-    // Only serve index.html if it's not an API route
+// Bulletproof Catch-all for SPA (Fixes Page Not Found on Refresh)
+// Using middleware fallback instead of app.get to avoid Express 5 path-to-regexp issues
+app.use((req, res, next) => {
+    // If it starts with /api, it's a 404 for the API
     if (req.url.startsWith('/api')) {
-        return next();
+        return res.status(404).json({ success: false, message: 'API route not found' });
     }
-    const indexPath = path.join(__dirname, '../frontend/dist/index.html');
-    res.sendFile(indexPath, (err) => {
+
+    // Otherwise, serve the frontend
+    res.sendFile(path.join(frontendDistPath, 'index.html'), (err) => {
         if (err) {
-            // If index.html is missing, return a basic response or 404
             res.status(404).json({
                 success: false,
-                message: 'Page not found and frontend not built',
+                message: 'Frontend not built. Please run npm run build.',
             });
         }
     });
