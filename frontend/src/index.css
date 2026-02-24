@@ -20,18 +20,26 @@ html {
   body {
     /* Fixed: Removed gray-50/100 and set to Galaxy Midnight */
     @apply antialiased bg-[#030712] text-slate-200 overflow-x-hidden;
-    
+
     /* Fixed: Switched to Inter for better readability */
     font-family: 'Inter', sans-serif;
   }
 
   /* Set headlines to the futuristic Space Grotesk font */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Space Grotesk', sans-serif;
   }
 
   /* Set code and technical stats to JetBrains Mono */
-  code, pre,p, .font-mono {
+  code,
+  pre,
+  p,
+  .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
 }
@@ -50,9 +58,11 @@ html {
   font-style: normal;
 }
 
-h1, .font-large {
+h1,
+.font-large {
   font-family: 'Circular', sans-serif;
-  letter-spacing: -0.02em; /* Circular looks best slightly tightened */
+  letter-spacing: -0.02em;
+  /* Circular looks best slightly tightened */
 }
 
 /* ============================================
@@ -223,6 +233,7 @@ h1, .font-large {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -234,6 +245,7 @@ h1, .font-large {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -245,6 +257,7 @@ h1, .font-large {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -252,9 +265,12 @@ h1, .font-large {
 }
 
 @keyframes pulse-soft {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
@@ -264,6 +280,7 @@ h1, .font-large {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -398,6 +415,7 @@ h1, .font-large {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -456,33 +474,44 @@ h1, .font-large {
 
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); } /* Counter-clockwise */
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
+
+  /* Counter-clockwise */
 }
+
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
 
 body {
-    background-color: #030712;
-    margin: 0;
-    color: #f8fafc;
+  background-color: #030712;
+  margin: 0;
+  color: #f8fafc;
 }
 
 /* Custom Scrollbar to match the Galaxy theme */
 ::-webkit-scrollbar {
-    width: 10px;
+  width: 10px;
 }
+
 ::-webkit-scrollbar-track {
-    background: #030712;
+  background: #030712;
 }
+
 ::-webkit-scrollbar-thumb {
-    background: #1e293b;
-    border-radius: 5px;
-    border: 2px solid #030712;
+  background: #1e293b;
+  border-radius: 5px;
+  border: 2px solid #030712;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+  background: #334155;
 }
 
 /* Star Field Effects */
@@ -490,7 +519,7 @@ body {
   width: 1px;
   height: 1px;
   background: transparent;
-  box-shadow: 450px 324px #FFF , 125px 560px #FFF , 890px 12px #FFF , 340px 980px #FFF , 1200px 450px #FFF, 1500px 200px #FFF, 50px 800px #FFF, 1800px 900px #FFF, 700px 300px #FFF, 1600px 100px #FFF, 600px 600px #FFF, 1100px 400px #FFF, 1400px 100px #FFF, 300px 900px #FFF, 700px 600px #FFF, 1600px 400px #FFF, 1000px 1000px #FFF;
+  box-shadow: 450px 324px #FFF, 125px 560px #FFF, 890px 12px #FFF, 340px 980px #FFF, 1200px 450px #FFF, 1500px 200px #FFF, 50px 800px #FFF, 1800px 900px #FFF, 700px 300px #FFF, 1600px 100px #FFF, 600px 600px #FFF, 1100px 400px #FFF, 1400px 100px #FFF, 300px 900px #FFF, 700px 600px #FFF, 1600px 400px #FFF, 1000px 1000px #FFF;
   /* Add more coordinates as needed */
   position: absolute;
   top: 0;
@@ -502,7 +531,7 @@ body {
   width: 2px;
   height: 2px;
   background: transparent;
-  box-shadow: 200px 400px #FFF , 600px 100px #FFF , 1100px 800px #FFF , 1400px 300px #FFF, 300px 900px #FFF,  700px 600px #FFF, 1600px 400px #FFF, 1000px 1000px #FFF, 450px 324px #FFF , 125px 560px #FFF , 890px 12px #FFF , 340px 980px #FFF , 1200px 450px #FFF, 1500px 200px #FFF, 50px 800px #FFF, 1800px 900px #FFF, 700px 300px #FFF, 1600px 100px #FFF, 600px 600px #FFF, 1100px 400px #FFF, 1400px 100px #FFF, 300px 900px #FFF, 700px 600px #FFF, 1600px 400px #FFF, 1000px 1000px #FFF;
+  box-shadow: 200px 400px #FFF, 600px 100px #FFF, 1100px 800px #FFF, 1400px 300px #FFF, 300px 900px #FFF, 700px 600px #FFF, 1600px 400px #FFF, 1000px 1000px #FFF, 450px 324px #FFF, 125px 560px #FFF, 890px 12px #FFF, 340px 980px #FFF, 1200px 450px #FFF, 1500px 200px #FFF, 50px 800px #FFF, 1800px 900px #FFF, 700px 300px #FFF, 1600px 100px #FFF, 600px 600px #FFF, 1100px 400px #FFF, 1400px 100px #FFF, 300px 900px #FFF, 700px 600px #FFF, 1600px 400px #FFF, 1000px 1000px #FFF;
   position: absolute;
   top: 0;
   left: 0;
@@ -513,7 +542,7 @@ body {
   width: 3px;
   height: 3px;
   background: transparent;
-  box-shadow: 800px 200px #FFF , 400px 700px #FFF , 1000px 500px #FFF, 200px 1000px #FFF, 900px 600px #FFF, 1200px 300px #FFF, 1500px 800px #FFF, 1800px 200px #FFF,  500px 900px #FFF, 1300px 400px #FFF, 1700px 100px #FFF, 1900px 700px #FFF, 600px 1000px #FFF, 1100px 200px #FFF, 1400px 800px #FFF, 300px 300px #FFF;
+  box-shadow: 800px 200px #FFF, 400px 700px #FFF, 1000px 500px #FFF, 200px 1000px #FFF, 900px 600px #FFF, 1200px 300px #FFF, 1500px 800px #FFF, 1800px 200px #FFF, 500px 900px #FFF, 1300px 400px #FFF, 1700px 100px #FFF, 1900px 700px #FFF, 600px 1000px #FFF, 1100px 200px #FFF, 1400px 800px #FFF, 300px 300px #FFF;
   position: absolute;
   top: 0;
   left: 0;
@@ -521,8 +550,15 @@ body {
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .animate-pulse {

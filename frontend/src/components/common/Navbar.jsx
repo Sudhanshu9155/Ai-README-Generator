@@ -70,8 +70,8 @@ const Navbar = () => {
                                 <Link
                                     to="/settings"
                                     className={`p-2.5 rounded-xl transition-all active:scale-95 group border hidden md:block ${isActive('/settings')
-                                            ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-900/20'
-                                            : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent hover:border-white/10'
+                                        ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-900/20'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent hover:border-white/10'
                                         }`}
                                     title="Settings"
                                 >
@@ -153,8 +153,8 @@ const MobileNavLink = ({ to, label, icon, active, onClick }) => (
         to={to}
         onClick={onClick}
         className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all border ${active
-                ? 'bg-purple-600/20 border-purple-500/30 text-white'
-                : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white'
+            ? 'bg-purple-600/20 border-purple-500/30 text-white'
+            : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white'
             }`}
     >
         <span className={active ? 'text-purple-400' : ''}>{icon}</span>

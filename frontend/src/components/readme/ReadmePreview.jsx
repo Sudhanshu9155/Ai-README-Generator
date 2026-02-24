@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { pushReadme } from '../../api/githubApi';
+import { stripMarkdown } from '../../utils/formatters';
 import { FaGithub, FaCopy, FaEdit, FaSave, FaCrown, FaTerminal, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 const ReadmePreview = ({ content, onEdit, onSave, entity }) => {
@@ -12,8 +13,8 @@ const ReadmePreview = ({ content, onEdit, onSave, entity }) => {
 
     const [copied, setCopied] = useState(false);
     const [pushing, setPushing] = useState(false);
-    const [message, setMessage] = useState(null); 
-    const [messageType, setMessageType] = useState(null); 
+    const [message, setMessage] = useState(null);
+    const [messageType, setMessageType] = useState(null);
 
     const showMessage = (text, type = 'success') => {
         setMessage(text);
@@ -25,7 +26,8 @@ const ReadmePreview = ({ content, onEdit, onSave, entity }) => {
     };
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(content);
+        const plainText = stripMarkdown(content);
+        navigator.clipboard.writeText(plainText);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -52,7 +54,7 @@ const ReadmePreview = ({ content, onEdit, onSave, entity }) => {
 
     return (
         <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shadow-2xl relative transition-all duration-500">
-            
+
             {/* --- HEADER --- */}
             <div className="bg-white/5 px-4 md:px-6 py-4 flex justify-between items-center border-b border-white/10">
                 <div className="flex items-center gap-3">
@@ -75,9 +77,8 @@ const ReadmePreview = ({ content, onEdit, onSave, entity }) => {
 
                     <button
                         onClick={handleCopy}
-                        className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest px-3 md:px-4 py-2 rounded-xl transition-all ${
-                            copied ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-slate-300 border border-white/10'
-                        }`}
+                        className={`flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest px-3 md:px-4 py-2 rounded-xl transition-all ${copied ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-slate-300 border border-white/10'
+                            }`}
                     >
                         <FaCopy /> {copied ? 'Copied!' : 'Copy'}
                     </button>
@@ -126,7 +127,7 @@ const ReadmePreview = ({ content, onEdit, onSave, entity }) => {
             {/* --- FOOTER --- */}
             <div className="p-4 md:px-6 md:py-4 border-t border-white/10 bg-white/5">
                 <div className="flex flex-col md:flex-row md:justify-between items-center gap-4">
-                    
+
                     {/* MOBILE ACTION AREA: Save removed, only Push/Upgrade remains */}
                     <div className="w-full md:hidden">
                         {isProUser ? (

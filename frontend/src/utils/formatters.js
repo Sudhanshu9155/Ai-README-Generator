@@ -48,3 +48,28 @@ export const formatFileSize = (bytes) => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 };
+
+export const stripMarkdown = (text) => {
+    if (!text) return '';
+    return text
+        // Remove markdown code blocks (e.g., ```markdown ... ```)
+        .replace(/```(?:markdown|md)?\n([\s\S]*?)\n```/g, '$1')
+        // Remove headers
+        .replace(/^#+\s+/gm, '')
+        // Remove bold/italic
+        .replace(/(\*\*|__)(.*?)\1/g, '$2')
+        .replace(/(\*|_)(.*?)\1/g, '$2')
+        // Remove links but keep text [text](url) -> text
+        .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+        // Remove inline code
+        .replace(/`([^`]+)`/g, '$1')
+        // Remove horizontal rules
+        .replace(/^(\s*[-*_]){3,}\s*$/gm, '')
+        // Remove blockquotes
+        .replace(/^\s*>\s+/gm, '')
+        // Remove list markers
+        .replace(/^\s*[-*+]\s+/gm, '')
+        // Remove numbered list markers
+        .replace(/^\s*\d+\.\s+/gm, '')
+        .trim();
+};

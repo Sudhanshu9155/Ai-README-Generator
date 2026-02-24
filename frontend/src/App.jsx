@@ -22,10 +22,10 @@ import Settings from './pages/Setting';
 const Background3D = () => {
     return (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-            <iframe 
-                src='https://my.spline.design/helix-995b2149e661075775368a51357564d6/' 
-                frameBorder='0' 
-                width='100%' 
+            <iframe
+                src='https://my.spline.design/helix-995b2149e661075775368a51357564d6/'
+                frameBorder='0'
+                width='100%'
                 height='100%'
                 className="scale-150 opacity-30" // Lower opacity so it doesn't distract in Dashboard
             ></iframe>
@@ -41,16 +41,16 @@ const DashboardLayout = ({ isSidebarOpen, toggleSidebar }) => {
         <div className="min-h-screen flex flex-col font-sans text-slate-200 relative">
             {/* Navbar only renders here for authenticated users */}
             <Navbar />
-            
+
             <div className="flex flex-1 relative pt-20">
                 <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-                <main 
+                <main
                     className={`flex-1 w-full transition-all duration-300 ease-in-out relative z-10 
                         /* MOBILE FIX: No margin by default, margins only on desktop (md) */
                         ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'} ml-0`}
                 >
                     {/* ProtectedRoute returns an <Outlet /> to show sub-pages */}
-                    <ProtectedRoute /> 
+                    <ProtectedRoute />
                 </main>
             </div>
         </div>
@@ -65,7 +65,7 @@ function App() {
             <AuthProvider>
                 {/* Global Wrapper for base styles - added 'relative' and 'z-10' logic */}
                 <div className="min-h-screen bg-[#030712] selection:bg-purple-500/30 overflow-x-hidden relative">
-                    
+
                     {/* 1. Global 3D Background */}
                     <Background3D />
 
@@ -81,9 +81,9 @@ function App() {
 
                             {/* --- PROTECTED ROUTES --- */}
                             <Route element={
-                                <DashboardLayout 
-                                    isSidebarOpen={isSidebarOpen} 
-                                    toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+                                <DashboardLayout
+                                    isSidebarOpen={isSidebarOpen}
+                                    toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
                                 />
                             }>
                                 <Route path="/dashboard" element={<Dashboard />} />

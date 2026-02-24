@@ -5,6 +5,7 @@ import ReadmePreview from '../components/readme/ReadmePreview';
 import GitHubConnect from '../components/common/GitHubConnect';
 import { createReadme, updateReadme } from '../api/entityApi';
 import { createOrder, verifyPayment } from '../api/paymentApi';
+import { pushReadme } from '../api/githubApi';
 import { useAuth } from '../context/AuthContext';
 import { FaGithub, FaCrown, FaMagic, FaArrowLeft, FaShieldAlt } from 'react-icons/fa';
 
@@ -83,6 +84,19 @@ const CreateReadme = () => {
             }
             setGeneratedContent(result.content);
             setStep('preview');
+
+            // --- AUTO PUSH TO GITHUB ---
+            if (user?.isPro && result.repoUrl && result._id) {
+                try {
+                    console.log("Auto-pushing to GitHub...");
+                    await pushReadme(result._id);
+                    console.log("Auto-push successful!");
+                } catch (pushError) {
+                    console.error("Auto-push failed:", pushError);
+                    // We don't alert here to avoid interrupting the preview, 
+                    // the user can still push manually from preview if needed.
+                }
+            }
         } catch (error) {
             if (error.response?.status === 403 && error.response.data.code === 'LIMIT_REACHED') {
                 setShowPaymentModal(true);
