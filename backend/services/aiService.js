@@ -5,23 +5,26 @@ export const generateReadmeContent = async (projectDetails) => {
         const { title, description, techStack, features } = projectDetails;
 
         // Construct the prompt
-                const prompt = `Generate a professional README.md content for a project with the following details:
+        const prompt = `Generate a modern, high-quality, and professional README.md for a project with these details:
         Project Title: ${title}
         Description: ${description}
         Tech Stack: ${techStack.join(', ')}
         Key Features: ${features.join(', ')}
 
-        The README should include:
-        - Title and Description
-        - Table of Contents
-        - Installation Instructions
-        - Usage Guide
-        - Features List
-        - Tech Stack
-        - Contributing Guidelines
-        - License
+        The README must follow this exact structural pattern:
+        1. **Header**: 
+           - Project Title (H1)
+           - A short, catchy description line
+           - A row of 5-6 status badges (use shields.io placeholders for npm version, license, build status, bundle size, etc.)
+        2. **Intro Paragraph**: A concise overview of what the project solves.
+        3. **Features Section**: A list of key features, each starting with a relevant emoji (e.g., 🚀, 🛡️, 📦, ⚡).
+        4. **Installation Section**: Provide installation commands for npm, yarn, and pnpm in separate code blocks.
+        5. **Quick Start**: A clear "Hello World" or basic import/usage code example.
+        6. **Usage/Hooks Section (if applicable)**: Break down the main functionality with sub-headings, showing short code snippets for each.
+        7. **SSR & TypeScript**: Explicitly mention SSR compatibility and TypeScript support with a sample of exported types/interfaces.
+        8. **Contributing & License**: Standard sections at the end.
 
-        Format the output in strict Markdown.`;
+        Aesthetics Matter: Use clean spacing, bold highlights for key terms, and professional formatting. Format in strict Markdown.`;
 
         // Check for API Key
         const apiKey = process.env.GEMINI_API_KEY;
@@ -58,7 +61,13 @@ export const generateReadmeContent = async (projectDetails) => {
             throw new Error('Invalid response format from API');
         }
 
-        return response.data.candidates[0].content.parts[0].text;
+        const generatedText = response.data.candidates[0].content.parts[0].text;
+
+        // Strip leading/trailing markdown code block markers if present
+        return generatedText
+            .replace(/^```(?:markdown|md)?\n/i, '')
+            .replace(/\n```$/m, '')
+            .trim();
 
     } catch (error) {
         console.error('AI Generation Error:', {
