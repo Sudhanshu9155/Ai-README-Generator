@@ -356,19 +356,25 @@ const Admin = () => {
                                             <span className="text-[10px] bg-white/5 px-2 py-1 rounded-md text-gray-500 font-bold">7D VIEW</span>
                                         </div>
                                         <div className="h-64">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <LineChart data={[
-                                                    { name: 'Mon', count: 4 }, { name: 'Tue', count: 7 }, { name: 'Wed', count: 12 },
-                                                    { name: 'Thu', count: 8 }, { name: 'Fri', count: 15 }, { name: 'Sat', count: 20 },
-                                                    { name: 'Sun', count: stats.gensToday }
-                                                ]}>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                                                    <XAxis dataKey="name" stroke="#4a5568" axisLine={false} tickLine={false} />
-                                                    <YAxis stroke="#4a5568" axisLine={false} tickLine={false} />
-                                                    <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }} itemStyle={{ color: '#0ea5e9' }} />
-                                                    <Line type="monotone" dataKey="count" stroke="#0ea5e9" strokeWidth={4} dot={{ fill: '#0ea5e9', r: 5, strokeWidth: 2, stroke: '#020617' }} activeDot={{ r: 8, strokeWidth: 0 }} />
-                                                </LineChart>
-                                            </ResponsiveContainer>
+                                            {typeof stats.gensToday === 'number' ? (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <LineChart data={[
+                                                        { name: 'Mon', count: 4 }, { name: 'Tue', count: 7 }, { name: 'Wed', count: 12 },
+                                                        { name: 'Thu', count: 8 }, { name: 'Fri', count: 15 }, { name: 'Sat', count: 20 },
+                                                        { name: 'Sun', count: Number(stats.gensToday) || 0 }
+                                                    ]}>
+                                                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                                                        <XAxis dataKey="name" stroke="#4a5568" axisLine={false} tickLine={false} />
+                                                        <YAxis stroke="#4a5568" axisLine={false} tickLine={false} allowDecimals={false} domain={[0, 'auto']} />
+                                                        <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }} itemStyle={{ color: '#0ea5e9' }} />
+                                                        <Line type="monotone" dataKey="count" stroke="#0ea5e9" strokeWidth={4} dot={{ fill: '#0ea5e9', r: 5, strokeWidth: 2, stroke: '#020617' }} activeDot={{ r: 8, strokeWidth: 0 }} />
+                                                    </LineChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <div className="h-full flex items-center justify-center">
+                                                    <div className="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
