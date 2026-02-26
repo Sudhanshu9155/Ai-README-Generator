@@ -44,25 +44,12 @@ html {
   }
 }
 
-@font-face {
-  font-family: 'Circular';
-  src: url('/fonts/Circular-Black.woff2') format('woff2');
-  font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Circular';
-  src: url('/fonts/Circular-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-}
-
+/* Circular font removed — files not present on deploy.
+   h1 / headings now use Space Grotesk (loaded via Google Fonts above). */
 h1,
 .font-large {
-  font-family: 'Circular', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   letter-spacing: -0.02em;
-  /* Circular looks best slightly tightened */
 }
 
 /* ============================================

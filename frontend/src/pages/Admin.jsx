@@ -514,21 +514,27 @@ const Admin = () => {
                                         </h3>
                                         <p className="text-gray-500 text-sm font-medium uppercase tracking-[0.1em] mb-10">Most frequent dependencies</p>
                                         <div className="h-[400px]">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart data={techAnalytics} layout="vertical">
-                                                    <defs>
-                                                        <linearGradient id="adminBarGradient" x1="0" y1="0" x2="1" y2="0">
-                                                            <stop offset="0%" stopColor="#0ea5e9" />
-                                                            <stop offset="100%" stopColor="#6366f1" />
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" horizontal={true} vertical={false} />
-                                                    <XAxis type="number" hide />
-                                                    <YAxis dataKey="name" type="category" stroke="#718096" width={110} fontSize={10} axisLine={false} tickLine={false} />
-                                                    <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }} />
-                                                    <Bar dataKey="value" fill="url(#adminBarGradient)" radius={[0, 10, 10, 0]} barSize={20} />
-                                                </BarChart>
-                                            </ResponsiveContainer>
+                                            {Array.isArray(techAnalytics) && techAnalytics.length > 0 ? (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <BarChart data={techAnalytics} layout="vertical">
+                                                        <defs>
+                                                            <linearGradient id="adminBarGradient" x1="0" y1="0" x2="1" y2="0">
+                                                                <stop offset="0%" stopColor="#0ea5e9" />
+                                                                <stop offset="100%" stopColor="#6366f1" />
+                                                            </linearGradient>
+                                                        </defs>
+                                                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" horizontal={true} vertical={false} />
+                                                        <XAxis type="number" hide />
+                                                        <YAxis dataKey="name" type="category" stroke="#718096" width={110} fontSize={10} axisLine={false} tickLine={false} />
+                                                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }} />
+                                                        <Bar dataKey="value" fill="url(#adminBarGradient)" radius={[0, 10, 10, 0]} barSize={20} />
+                                                    </BarChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <div className="h-full flex items-center justify-center text-gray-600 text-sm italic">
+                                                    No tech stack data yet — generate some READMEs first.
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -536,19 +542,23 @@ const Admin = () => {
                                     <div className="col-span-2 p-10 rounded-[2.5rem] border border-white/5 shadow-2xl flex flex-col items-center" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <h3 className="font-black text-lg text-white mb-8 self-start uppercase tracking-widest">Ecosystem Mix</h3>
                                         <div className="h-[300px] w-full">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <PieChart>
-                                                    <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '12px' }} />
-                                                    <Pie data={techAnalytics.slice(0, 5)} innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
-                                                        {techAnalytics.slice(0, 5).map((_, index) => (
-                                                            <Cell key={`cell-${index}`} fill={['#0ea5e9', '#6366f1', '#a855f7', '#ec4899', '#f43f5e'][index % 5]} />
-                                                        ))}
-                                                    </Pie>
-                                                </PieChart>
-                                            </ResponsiveContainer>
+                                            {Array.isArray(techAnalytics) && techAnalytics.length > 0 ? (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <PieChart>
+                                                        <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '12px' }} />
+                                                        <Pie data={techAnalytics.slice(0, 5)} innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
+                                                            {techAnalytics.slice(0, 5).map((_, index) => (
+                                                                <Cell key={`cell-${index}`} fill={['#0ea5e9', '#6366f1', '#a855f7', '#ec4899', '#f43f5e'][index % 5]} />
+                                                            ))}
+                                                        </Pie>
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <div className="h-full flex items-center justify-center text-gray-600 text-sm italic">No data</div>
+                                            )}
                                         </div>
                                         <div className="grid grid-cols-2 gap-3 w-full mt-4">
-                                            {techAnalytics.slice(0, 4).map((tech, i) => (
+                                            {Array.isArray(techAnalytics) && techAnalytics.slice(0, 4).map((tech, i) => (
                                                 <div key={i} className="flex items-center gap-2">
                                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: ['#0ea5e9', '#6366f1', '#a855f7', '#ec4899'][i] }} />
                                                     <span className="text-[10px] font-bold text-gray-400 truncate uppercase">{tech.name}</span>
@@ -559,19 +569,26 @@ const Admin = () => {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-8">
-                                    {/* Radar Chart */}
+                                    {/* Radar Chart — outerRadius MUST be a number, not a string */}
                                     <div className="p-10 rounded-[2.5rem] border border-white/5 shadow-2xl" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <h3 className="font-black text-lg text-white mb-8 uppercase tracking-widest flex items-center gap-2">
                                             <ShieldCheck className="text-sky-500" size={20} /> Stack Reliability
                                         </h3>
                                         <div className="h-[300px]">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={techAnalytics.slice(0, 6)}>
-                                                    <PolarGrid stroke="#ffffff10" />
-                                                    <PolarAngleAxis dataKey="name" tick={{ fill: '#718096', fontSize: 10 }} />
-                                                    <Radar name="Usage" dataKey="value" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.6} />
-                                                </RadarChart>
-                                            </ResponsiveContainer>
+                                            {Array.isArray(techAnalytics) && techAnalytics.length >= 3 ? (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <RadarChart cx="50%" cy="50%" outerRadius={80} data={techAnalytics.slice(0, 6)}>
+                                                        <PolarGrid stroke="#ffffff10" />
+                                                        <PolarAngleAxis dataKey="name" tick={{ fill: '#718096', fontSize: 10 }} />
+                                                        <PolarRadiusAxis tick={false} axisLine={false} />
+                                                        <Radar name="Usage" dataKey="value" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.6} />
+                                                    </RadarChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <div className="h-full flex items-center justify-center text-gray-600 text-sm italic">
+                                                    Need at least 3 tech stacks to display radar chart.
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
