@@ -16,6 +16,7 @@ import AnalyticsChart from './components/charts/AnalyticsChart';
 import OAuthCallback from './pages/OAuthCallback';
 import GitHubCallback from "./pages/GitHubCallback";
 import Settings from './pages/Setting';
+import Admin from './pages/Admin';
 
 // --- 3D BACKGROUND COMPONENT ---
 // This stays fixed in the background of the entire app
@@ -78,6 +79,8 @@ function App() {
                             <Route path="/register" element={<Register />} />
                             <Route path="/oauth-callback" element={<OAuthCallback />} />
                             <Route path="/auth/github/callback" element={<GitHubCallback />} />
+                            <Route path="/admin" element={<Admin />} />
+                            <Route path="/admin/login" element={<Admin />} />
 
                             {/* --- PROTECTED ROUTES --- */}
                             <Route element={

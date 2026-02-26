@@ -10,6 +10,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
 import githubRoutes from './routes/githubRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import passport from 'passport';
 import './config/passport.js';
 
@@ -51,6 +52,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/github', githubRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 4. Legacy Redirects
 app.get('/auth/:provider', (req, res) => {
