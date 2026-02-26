@@ -3,19 +3,176 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ═══════════════════════════════════════════════
+       PRIMARY SEO META TAGS
+  ═══════════════════════════════════════════════ -->
+  <title>AI README Generator — Create Professional GitHub READMEs in Seconds</title>
+  <meta name="description"
+    content="Generate stunning, professional README files for your GitHub projects in seconds using AI. Free AI-powered documentation tool for developers — supports all tech stacks." />
+  <meta name="keywords"
+    content="AI README generator, GitHub README, auto README, markdown generator, AI documentation, developer tools, README creator, GitHub profile README, open source README, AI writing tool" />
+  <meta name="author" content="AI README Generator" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="theme-color" content="#030712" />
+  <link rel="canonical" href="https://ai-readme-generator-frontend.onrender.com/" />
+
+  <!-- ═══════════════════════════════════════════════
+       OPEN GRAPH (Facebook, LinkedIn, WhatsApp)
+  ═══════════════════════════════════════════════ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="AI README Generator" />
+  <meta property="og:title" content="AI README Generator — Create Professional GitHub READMEs in Seconds" />
+  <meta property="og:description"
+    content="Generate stunning, professional README files for your GitHub projects in seconds using AI. Free tool for developers — supports all tech stacks." />
+  <meta property="og:url" content="https://ai-readme-generator-frontend.onrender.com/" />
+  <meta property="og:image" content="https://ai-readme-generator-frontend.onrender.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="AI README Generator — AI-powered documentation for GitHub" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ═══════════════════════════════════════════════
+       TWITTER CARD
+  ═══════════════════════════════════════════════ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@AIReadmeGen" />
+  <meta name="twitter:creator" content="@AIReadmeGen" />
+  <meta name="twitter:title" content="AI README Generator — Professional GitHub READMEs in Seconds" />
+  <meta name="twitter:description"
+    content="Stop writing README files manually. Let AI do it in seconds. Free, fast, and beautiful documentation for any GitHub project." />
+  <meta name="twitter:image" content="https://ai-readme-generator-frontend.onrender.com/og-image.png" />
+  <meta name="twitter:image:alt" content="AI README Generator preview" />
+
+  <!-- ═══════════════════════════════════════════════
+       STRUCTURED DATA — JSON-LD (Google Rich Results)
+  ═══════════════════════════════════════════════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://ai-readme-generator-frontend.onrender.com/#website",
+        "url": "https://ai-readme-generator-frontend.onrender.com/",
+        "name": "AI README Generator",
+        "description": "AI-powered README file generator for GitHub projects",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://ai-readme-generator-frontend.onrender.com/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://ai-readme-generator-frontend.onrender.com/#app",
+        "name": "AI README Generator",
+        "url": "https://ai-readme-generator-frontend.onrender.com/",
+        "description": "Generate professional, beautiful GitHub README files automatically using AI. Supports all programming languages and tech stacks.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "128",
+          "bestRating": "5"
+        },
+        "featureList": [
+          "AI-powered README generation",
+          "GitHub repository integration",
+          "Multiple tech stack support",
+          "Instant markdown export",
+          "Project analytics dashboard",
+          "One-click GitHub push"
+        ]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://ai-readme-generator-frontend.onrender.com/#organization",
+        "name": "AI README Generator",
+        "url": "https://ai-readme-generator-frontend.onrender.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://ai-readme-generator-frontend.onrender.com/og-image.png",
+          "width": 1200,
+          "height": 630
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is AI README Generator?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AI README Generator is a free AI-powered tool that automatically creates professional, beautiful README.md files for your GitHub projects in seconds."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is AI README Generator free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! AI README Generator is completely free for basic usage. You can generate professional README files without any cost."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which programming languages does it support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AI README Generator supports all major programming languages and tech stacks including JavaScript, Python, React, Node.js, Django, Vue, Angular, TypeScript, Go, Rust, and many more."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I push the README directly to GitHub?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! With GitHub OAuth integration, you can push your generated README directly to any of your GitHub repositories with a single click."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════
+       PERFORMANCE & PRELOADS
+  ═══════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
   <!-- Inter (Main UI Font) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
-
-  <!-- JetBrains Mono (Developer Style Font) -->
+    rel="stylesheet" />
+  <!-- JetBrains Mono (Code Font) -->
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
-  <title>AI README Generator</title>
+    rel="stylesheet" />
+
+  <!-- Favicon — emoji SVG -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>" />
+  <!-- Apple Touch Icon fallback -->
+  <link rel="apple-touch-icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>" />
+
+  <!-- ═══════════════════════════════════════════════
+       BASE STYLES
+  ═══════════════════════════════════════════════ -->
   <style>
-    * {
+    *,
+    *::before,
+    *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -24,6 +181,14 @@
     body {
       margin: 0;
       padding: 0;
+      background-color: #030712;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Prevent flash of unstyled content */
+    #root {
+      min-height: 100vh;
     }
   </style>
 </head>

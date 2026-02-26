@@ -1,0 +1,27 @@
+# AI README Generator — robots.txt
+# https://ai-readme-generator-frontend.onrender.com/
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+
+# Block private/admin pages from indexing
+Disallow: /admin
+Disallow: /admin/login
+Disallow: /dashboard
+Disallow: /create
+Disallow: /edit/
+Disallow: /history
+Disallow: /settings
+Disallow: /upgrade
+Disallow: /analytics
+Disallow: /oauth-callback
+Disallow: /auth/
+
+# Sitemap location
+Sitemap: https://ai-readme-generator-frontend.onrender.com/sitemap.xml
+
+# Crawl delay (optional, helps prevent server overload)
+Crawl-delay: 1
