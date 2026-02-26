@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Component } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -19,6 +19,43 @@ import Loader from '../common/Loader';
 
 // Neural Theme Colors
 const COLORS = ['#8B5CF6', '#6366F1', '#0EA5E9', '#10B981', '#F43F5E'];
+
+// ── Chart Error Boundary ─────────────────────────────────────────
+// Catches recharts crashes (d.slice().map, domain errors, etc.)
+// and shows a graceful fallback instead of breaking the page.
+class ChartErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(err) {
+    console.warn('[AnalyticsChart] recharts crash caught:', err.message);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ height: 250 }} className="flex items-center justify-center text-slate-600 text-xs italic">
+          Chart unavailable — data may still be loading.
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ── Sanitise chart data ─────────────────────────────────────────
+// Guarantees every item has a numeric value so recharts never sees
+// undefined/null/string in its domain computation.
+const safeData = (data, key = 'value') => {
+  if (!Array.isArray(data)) return [];
+  return data.map(item => ({
+    ...item,
+    [key]: typeof item[key] === 'number' ? item[key] : 0,
+  }));
+};
 
 const AnalyticsChart = ({
   data,
@@ -42,7 +79,7 @@ const AnalyticsChart = ({
       setLoading(true);
       try {
         const stats = await getDashboardStats();
-        const last7 = stats.last7Days || [];
+        const last7 = Array.isArray(stats.last7Days) ? stats.last7Days : [];
         const formatter = new Intl.DateTimeFormat(undefined, {
           day: '2-digit',
           month: 'short'
@@ -51,9 +88,11 @@ const AnalyticsChart = ({
         let mapped = last7.map((d) => {
           const dateObj = new Date(d.date);
           return {
-            label: isNaN(dateObj) ? d.date : formatter.format(dateObj),
-            value: series === 'lines' ? d.lines : d.projects,
-            projects: d.projectList || []
+            label: isNaN(dateObj) ? String(d.date) : formatter.format(dateObj),
+            value: typeof (series === 'lines' ? d.lines : d.projects) === 'number'
+              ? (series === 'lines' ? d.lines : d.projects)
+              : 0,
+            projects: Array.isArray(d.projectList) ? d.projectList : []
           };
         });
 
@@ -62,11 +101,7 @@ const AnalyticsChart = ({
           mapped = Array.from({ length: 7 }).map((_, i) => {
             const d = new Date(today);
             d.setDate(today.getDate() - (6 - i));
-            return {
-              label: formatter.format(d),
-              value: 0,
-              projects: []
-            };
+            return { label: formatter.format(d), value: 0, projects: [] };
           });
         }
 
@@ -104,7 +139,7 @@ const AnalyticsChart = ({
           <div key={i} className="flex justify-between items-center gap-4 py-0.5">
             <span className="text-[10px] font-bold text-slate-200">{p.name}:</span>
             <span className="text-[10px] font-black" style={{ color: p.stroke || p.fill || '#fff' }}>
-              {p.value.toLocaleString()}
+              {Number(p.value).toLocaleString()}
             </span>
           </div>
         ))}
@@ -135,26 +170,25 @@ const AnalyticsChart = ({
         )
       );
 
-    // Dynamic data transformation for multi-line support
     const transformed = chartData.map((d) => {
       const row = { label: d.label };
       projectList.forEach((p) => {
         const found = (d.projects || []).find((x) => x.title === p.title);
-        row[p.key] = found ? found.lines : 0;
+        row[p.key] = found ? (typeof found.lines === 'number' ? found.lines : 0) : 0;
       });
       return row;
     });
 
-    const displayData = projectList.length > 0 ? transformed : chartData;
+    const displayData = safeData(projectList.length > 0 ? transformed : chartData, 'value');
 
     return (
       <LineChart data={displayData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
         <XAxis dataKey="label" axisLine={false} tickLine={false} tick={axisStyle} interval="preserveStartEnd" minTickGap={15} />
-        <YAxis axisLine={false} tickLine={false} tick={axisStyle} />
+        <YAxis axisLine={false} tickLine={false} tick={axisStyle} allowDecimals={false} domain={[0, 'dataMax + 1']} />
         <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#ffffff10', strokeWidth: 2 }} />
         <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase' }} />
-        
+
         {projectList.length > 0 ? (
           projectList.map((p, i) => (
             <Line
@@ -194,10 +228,12 @@ const AnalyticsChart = ({
     );
   }
 
+  const clean = safeData(chartData);
+
   return (
     <div className="relative group overflow-hidden bg-slate-900/40 backdrop-blur-xl border border-white/10 p-4 md:p-6 rounded-[2rem] shadow-2xl transition-all hover:border-white/20">
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/10 blur-[100px] rounded-full"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/10 blur-[100px] rounded-full" />
       </div>
 
       <div className="relative z-10">
@@ -206,47 +242,50 @@ const AnalyticsChart = ({
             {title}
           </h3>
           <div className="flex gap-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>
-            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" style={{ animationDelay: '0.2s' }} />
           </div>
         </div>
 
+        {/* CRITICAL: ResponsiveContainer MUST have explicit width + height */}
         <div style={{ width: '100%', height: 250 }}>
-          <ResponsiveContainer>
-            {type === 'line' ? (
-              buildLineChart()
-            ) : type === 'bar' ? (
-              <BarChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={axisStyle} />
-                <YAxis axisLine={false} tickLine={false} tick={axisStyle} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff05' }} />
-                <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase' }} />
-                <Bar dataKey="value" name={series === 'lines' ? 'Lines' : 'Projects'} radius={[4, 4, 0, 0]}>
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.8} />
-                  ))}
-                </Bar>
-              </BarChart>
-            ) : (
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  nameKey="label"
-                  innerRadius={50}
-                  outerRadius={70}
-                  paddingAngle={5}
-                >
-                  {chartData.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} stroke="transparent" />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px', fontSize: '9px', fontWeight: 'bold' }} />
-              </PieChart>
-            )}
-          </ResponsiveContainer>
+          <ChartErrorBoundary>
+            <ResponsiveContainer width="100%" height="100%">
+              {type === 'line' ? (
+                buildLineChart()
+              ) : type === 'bar' ? (
+                <BarChart data={clean} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                  <XAxis dataKey="label" axisLine={false} tickLine={false} tick={axisStyle} />
+                  <YAxis axisLine={false} tickLine={false} tick={axisStyle} allowDecimals={false} domain={[0, 'dataMax + 1']} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff05' }} />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase' }} />
+                  <Bar dataKey="value" name={series === 'lines' ? 'Lines' : 'Projects'} radius={[4, 4, 0, 0]}>
+                    {clean.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.8} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              ) : (
+                <PieChart>
+                  <Pie
+                    data={clean}
+                    dataKey="value"
+                    nameKey="label"
+                    innerRadius={50}
+                    outerRadius={70}
+                    paddingAngle={5}
+                  >
+                    {clean.map((_, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} stroke="transparent" />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px', fontSize: '9px', fontWeight: 'bold' }} />
+                </PieChart>
+              )}
+            </ResponsiveContainer>
+          </ChartErrorBoundary>
         </div>
       </div>
     </div>
