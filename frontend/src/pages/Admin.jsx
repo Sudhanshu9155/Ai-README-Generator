@@ -272,21 +272,21 @@ const Admin = () => {
 
     // ── DASHBOARD ─────────────────────────────────────────────
     return (
-        <div className="min-h-screen bg-[#020617] text-gray-100 flex">
+        <div className="min-h-screen bg-[#020617] text-gray-100 flex flex-col lg:flex-row">
 
             {/* ── Sidebar ── */}
             <div
-                className="w-64 flex flex-col p-4 fixed h-screen z-40 border-r border-white/5"
+                className="w-full lg:w-64 flex flex-col p-4 lg:fixed lg:h-screen z-40 border-b lg:border-b-0 lg:border-r border-white/5"
                 style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)' }}
             >
-                <div className="flex items-center gap-3 mb-10 px-2">
+                <div className="flex items-center gap-3 mb-4 lg:mb-10 px-2">
                     <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(14,165,233,0.3)]">
                         <ShieldCheck size={20} />
                     </div>
                     <span className="font-bold text-xl tracking-tight">AI README</span>
                 </div>
 
-                <nav className="flex-1 space-y-1">
+                <nav className="flex-1 flex lg:block gap-2 lg:space-y-1 overflow-x-auto pb-1">
                     <SidebarLink icon={<BarChart3 size={20} />} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
                     <SidebarLink icon={<Users size={20} />} label="Users" active={activeTab === 'users'} onClick={() => setActiveTab('users')} />
                     <SidebarLink icon={<Activity size={20} />} label="Activity Logs" active={activeTab === 'activity'} onClick={() => setActiveTab('activity')} />
@@ -295,7 +295,7 @@ const Admin = () => {
                 </nav>
 
                 {systemStatus && (
-                    <div className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/5 space-y-3">
+                    <div className="hidden lg:block mt-6 p-4 bg-white/5 rounded-2xl border border-white/5 space-y-3">
                         <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                             <span>System Health</span>
                             <span className="text-emerald-400">Online</span>
@@ -336,21 +336,21 @@ const Admin = () => {
             </div>
 
             {/* ── Main Content ── */}
-            <main className="flex-1 overflow-y-auto p-8 ml-64">
+            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 lg:ml-64">
 
                 {/* Header */}
-                <header className="flex justify-between items-center mb-8">
+                <header className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-8">
                     <div>
                         <h2 className="text-3xl font-bold text-white capitalize">
                             {activeTab.replace('-', ' ')}
                         </h2>
                         <p className="text-gray-400">System command center and insights</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="relative">
+                    <div className="flex items-center gap-3 sm:gap-4 w-full lg:w-auto">
+                        <div className="relative flex-1 lg:flex-none">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
-                                className="bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 w-64"
+                                className="bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 w-full lg:w-64"
                                 placeholder="Search systems..."
                             />
                         </div>
@@ -367,7 +367,7 @@ const Admin = () => {
                             </button>
                             {showNotifications && (
                                 <div
-                                    className="absolute right-0 mt-3 w-80 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 border border-white/10 overflow-hidden"
+                                    className="absolute right-0 mt-3 w-[min(20rem,calc(100vw-2rem))] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 border border-white/10 overflow-hidden"
                                     style={{ background: 'rgba(30,41,59,0.9)', backdropFilter: 'blur(12px)' }}
                                 >
                                     <div className="p-5 border-b border-white/5 bg-white/5 flex justify-between items-center">
@@ -444,14 +444,14 @@ const Admin = () => {
                         {/* ── DASHBOARD TAB ── */}
                         {activeTab === 'dashboard' && (
                             <div className="space-y-8">
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
                                     <AdminStatCard label="Total Users" value={stats?.totalUsers ?? 0} sub="Lifetime Growth" icon={<Users className="text-blue-400" />} trend="+12.5%" />
                                     <AdminStatCard label="Premium Members" value={stats?.proUsers ?? 0} sub="Elite Status" icon={<UserCheck className="text-emerald-400" />} trend="+4.2%" />
                                     <AdminStatCard label="Daily Creations" value={stats?.gensToday ?? 0} sub="AI Performance" icon={<Activity className="text-orange-400" />} trend="+18.1%" />
                                     <AdminStatCard label="Total READMEs" value={stats?.totalReadmes ?? 0} sub="All Time" icon={<BarChart3 className="text-purple-400" />} trend="+9.8%" />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                     {/* Generation Velocity Line Chart */}
                                     <div className="p-8 rounded-[2rem] border border-white/5" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <div className="flex justify-between items-center mb-6">
@@ -621,9 +621,9 @@ const Admin = () => {
                         {/* ── ANALYTICS TAB ── */}
                         {activeTab === 'analytics' && (
                             <div className="space-y-8">
-                                <div className="grid grid-cols-5 gap-8">
+                                <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
                                     {/* Bar Chart */}
-                                    <div className="col-span-3 p-10 rounded-[2.5rem] border border-white/5 shadow-2xl" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                    <div className="xl:col-span-3 p-6 sm:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <h3 className="font-black text-2xl text-white tracking-tight flex items-center gap-3 mb-2">
                                             <BarChart3 className="text-sky-500" size={32} />
                                             Library Adoption Rate
@@ -657,7 +657,7 @@ const Admin = () => {
                                     </div>
 
                                     {/* Pie Chart */}
-                                    <div className="col-span-2 p-10 rounded-[2.5rem] border border-white/5 shadow-2xl flex flex-col items-center" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                    <div className="xl:col-span-2 p-6 sm:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl flex flex-col items-center" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <h3 className="font-black text-lg text-white mb-8 self-start uppercase tracking-widest">Ecosystem Mix</h3>
                                         <div className="h-[300px] w-full">
                                             <ChartErrorBoundary>
@@ -677,7 +677,7 @@ const Admin = () => {
                                                 )}
                                             </ChartErrorBoundary>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3 w-full mt-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-4">
                                             {safeChartData(techAnalytics).slice(0, 4).map((tech, i) => (
                                                 <div key={i} className="flex items-center gap-2">
                                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: ['#0ea5e9', '#6366f1', '#a855f7', '#ec4899'][i] }} />
@@ -688,9 +688,9 @@ const Admin = () => {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                                     {/* Radar Chart */}
-                                    <div className="p-10 rounded-[2.5rem] border border-white/5 shadow-2xl" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                    <div className="p-6 sm:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <h3 className="font-black text-lg text-white mb-8 uppercase tracking-widest flex items-center gap-2">
                                             <ShieldCheck className="text-sky-500" size={20} /> Stack Reliability
                                         </h3>
@@ -715,7 +715,7 @@ const Admin = () => {
                                     </div>
 
                                     {/* Market Trend Insight */}
-                                    <div className="p-10 rounded-[2.5rem] border border-white/5 shadow-2xl flex flex-col justify-center" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                    <div className="p-6 sm:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl flex flex-col justify-center" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <div className="space-y-8">
                                             <div>
                                                 <p className="text-[10px] font-black text-sky-500 uppercase tracking-[0.3em] mb-4">Market Trend Insight</p>
@@ -724,7 +724,7 @@ const Admin = () => {
                                                     <span className="text-purple-400">@radix-ui</span> integrations this week.
                                                 </h4>
                                             </div>
-                                            <div className="pt-8 border-t border-white/5 flex gap-10">
+                                            <div className="pt-8 border-t border-white/5 flex flex-wrap gap-6 sm:gap-10">
                                                 <div>
                                                     <p className="text-sm font-black text-white">4.2s</p>
                                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Avg Gen Time</p>
@@ -747,7 +747,7 @@ const Admin = () => {
                         {/* ── SUSPICIOUS TAB ── */}
                         {activeTab === 'suspicious' && (
                             <div className="space-y-8 max-w-5xl mx-auto">
-                                <div className="bg-red-500/10 border border-red-500/20 p-10 rounded-[2.5rem] flex items-center gap-8 relative overflow-hidden">
+                                <div className="bg-red-500/10 border border-red-500/20 p-6 sm:p-10 rounded-[2.5rem] flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                                     <div className="p-5 bg-red-500 rounded-[1.5rem] shadow-[0_0_30px_rgba(239,68,68,0.5)] z-10">
                                         <ShieldAlert className="text-white" size={40} />
@@ -799,7 +799,7 @@ const Admin = () => {
                                         </div>
                                     ))}
                                     {suspicious.length === 0 && (
-                                        <div className="col-span-2 p-20 text-center rounded-[3rem] border border-white/5" style={{ background: 'rgba(30,41,59,0.7)' }}>
+                                        <div className="md:col-span-2 p-10 sm:p-20 text-center rounded-[3rem] border border-white/5" style={{ background: 'rgba(30,41,59,0.7)' }}>
                                             <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                                                 <ShieldCheck className="text-emerald-500" size={40} />
                                             </div>
@@ -819,17 +819,17 @@ const Admin = () => {
             {selectedUser && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#020617]/90 backdrop-blur-2xl">
                     <div
-                        className="w-full max-w-6xl max-h-[95vh] rounded-[3rem] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10"
+                        className="w-full max-w-6xl max-h-[95vh] rounded-2xl sm:rounded-[3rem] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10"
                         style={{ background: 'rgba(30,41,59,0.95)', backdropFilter: 'blur(20px)' }}
                     >
-                        <div className="p-12 bg-gradient-to-br from-sky-600/20 to-transparent border-b border-white/5 flex justify-between items-start">
-                            <div className="flex items-center gap-10">
-                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-4xl font-black text-white shadow-[0_20px_40px_rgba(14,165,233,0.4)]">
+                        <div className="p-6 sm:p-12 bg-gradient-to-br from-sky-600/20 to-transparent border-b border-white/5 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
+                            <div className="flex items-center gap-4 sm:gap-10">
+                                <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-[2rem] bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-2xl sm:text-4xl font-black text-white shadow-[0_20px_40px_rgba(14,165,233,0.4)]">
                                     {selectedUser.user.name[0]}
                                 </div>
                                 <div>
-                                    <div className="flex items-center gap-4 mb-3">
-                                        <h2 className="text-4xl font-black text-white tracking-tighter">{selectedUser.user.name}</h2>
+                                    <div className="flex items-center gap-3 sm:gap-4 mb-3">
+                                        <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tighter">{selectedUser.user.name}</h2>
                                         <span className={`px-4 py-1 rounded-xl text-[10px] font-black tracking-widest border ${selectedUser.user.isPro ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
                                             {selectedUser.user.isPro ? 'PRO' : 'FREE'}
                                         </span>
@@ -842,14 +842,14 @@ const Admin = () => {
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-12 grid grid-cols-4 gap-12">
-                            <div className="col-span-3 space-y-12">
+                        <div className="flex-1 overflow-y-auto p-6 sm:p-12 grid grid-cols-1 xl:grid-cols-4 gap-8 sm:gap-12">
+                            <div className="xl:col-span-3 space-y-12">
                                 {/* README list */}
                                 <div>
                                     <h3 className="text-2xl font-black mb-8 flex items-center gap-4 text-white uppercase tracking-tighter">
                                         <Activity className="text-sky-500" size={28} /> Deployment Registry
                                     </h3>
-                                    <div className="grid grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {selectedUser.readmes.map((r, i) => (
                                             <div key={i} className="p-8 bg-white/[0.03] rounded-[2rem] border border-white/[0.05] hover:border-sky-500/40 transition-all">
                                                 <div className="flex justify-between items-start mb-4">
@@ -865,7 +865,7 @@ const Admin = () => {
                                             </div>
                                         ))}
                                         {selectedUser.readmes.length === 0 && (
-                                            <div className="col-span-2 p-16 text-center border border-dashed border-white/10 rounded-[2rem]">
+                                            <div className="md:col-span-2 p-16 text-center border border-dashed border-white/10 rounded-[2rem]">
                                                 <p className="text-gray-600 font-bold italic">No deployments found.</p>
                                             </div>
                                         )}
@@ -928,14 +928,14 @@ const Admin = () => {
 const SidebarLink = ({ icon, label, active, onClick, badge }) => (
     <button
         onClick={onClick}
-        className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group relative overflow-hidden ${active
+        className={`w-auto lg:w-full shrink-0 flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-3 lg:py-4 rounded-2xl transition-all duration-300 group relative overflow-hidden ${active
             ? 'bg-sky-600/10 text-sky-400 border border-sky-500/10'
             : 'text-gray-500 hover:bg-white/[0.02] hover:text-gray-300'
             }`}
     >
         {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-sky-500 rounded-r-full shadow-[0_0_15px_rgba(14,165,233,1)]" />}
         <span className={`${active ? 'scale-125 text-sky-500' : 'group-hover:text-sky-400'} transition-all`}>{icon}</span>
-        <span className={`flex-1 text-left font-bold text-sm tracking-wide ${active ? 'text-white' : ''}`}>{label}</span>
+        <span className={`flex-1 text-left font-bold text-xs sm:text-sm tracking-wide whitespace-nowrap ${active ? 'text-white' : ''}`}>{label}</span>
         {badge > 0 && (
             <span className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-lg shadow-lg shadow-red-600/20">
                 {badge}
