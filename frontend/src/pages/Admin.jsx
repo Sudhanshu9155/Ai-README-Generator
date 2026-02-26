@@ -55,8 +55,19 @@ const safeChartData = (data, valueKey = 'value') => {
 // Set this in Render environment variables.
 // Fallback chain: VITE_ADMIN_API_URL → VITE_API_URL/admin → /api/admin
 // ──────────────────────────────────────────────────────────────
-const API_BASE = import.meta.env.VITE_ADMIN_API_URL
-    || `${import.meta.env.VITE_API_URL || '/api'}/admin`;
+const normalizeUrl = (url) => url ? url.replace(/\/+$/, '') : '';
+const rawAdminUrl = import.meta.env.VITE_ADMIN_API_URL;
+const rawBaseUrl = import.meta.env.VITE_API_URL;
+
+// On Render (production), the backend serves the frontend on the SAME domain.
+// Therefore, /api/admin is the most robust way to hit the API without CORS issues.
+// We only use the environment variables if they are explicitly provided (e.g. for cross-domain).
+const API_BASE = normalizeUrl(
+    rawAdminUrl ||
+    (rawBaseUrl ? `${normalizeUrl(rawBaseUrl)}/admin` : '/api/admin')
+);
+
+console.log('Admin: Initializing with API_BASE:', API_BASE);
 
 // ──────────────────────────────────────────────────────────────
 // Admin Dashboard Page
