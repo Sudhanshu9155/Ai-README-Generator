@@ -51,11 +51,12 @@ const safeChartData = (data, valueKey = 'value') => {
 };
 
 // ──────────────────────────────────────────────────────────────
-// Admin API base URL — reads from VITE_API_URL env variable.
-// Set VITE_API_URL in frontend/.env (local) or Render environment.
-// Falls back to '/api' (relative) so Vite proxy works in local dev.
+// Admin API base URL — uses its own VITE_ADMIN_API_URL env var.
+// Set this in Render environment variables.
+// Fallback chain: VITE_ADMIN_API_URL → VITE_API_URL/admin → /api/admin
 // ──────────────────────────────────────────────────────────────
-const API_BASE = `${import.meta.env.VITE_API_URL || '/api'}/admin`;
+const API_BASE = import.meta.env.VITE_ADMIN_API_URL
+    || `${import.meta.env.VITE_API_URL || '/api'}/admin`;
 
 // ──────────────────────────────────────────────────────────────
 // Admin Dashboard Page
