@@ -65,6 +65,7 @@ const Admin = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isInitialising, setIsInitialising] = useState(!!localStorage.getItem('adminToken'));
     const [token, setToken] = useState(() => localStorage.getItem('adminToken'));
+    const [fetchError, setFetchError] = useState(null);
     const [activeTab, setActiveTab] = useState('dashboard');
     const [users, setUsers] = useState([]);
     const [activities, setActivities] = useState([]);
@@ -95,6 +96,7 @@ const Admin = () => {
         const t = authToken || token;
         if (!t) return;
         setLoading(true);
+        setFetchError(null);
         try {
             const headers = { Authorization: `Bearer ${t}` };
             const [uRes, aRes, sRes, statsRes, nRes, tRes, sysRes] = await Promise.all([
@@ -117,9 +119,17 @@ const Admin = () => {
             setToken(t);
             setIsLoggedIn(true);
         } catch (err) {
-            console.error('Admin data fetch error:', err);
-            if (err.response?.status === 401 || err.response?.status === 403) {
+            const status = err.response?.status;
+            const msg = err.response?.data?.message || err.message || 'Unknown error';
+            console.error(`Admin fetchData failed [${status}]:`, msg, err);
+            if (status === 401 || status === 403) {
                 handleLogout();
+            } else {
+                // Non-auth error (500, network, etc.) — stay logged in but show error
+                setFetchError(`Failed to load data: ${msg} (status ${status || 'network error'})`);
+                // Still mark as logged in so the dashboard shows
+                setIsLoggedIn(true);
+                setToken(t);
             }
         } finally {
             setLoading(false);
@@ -396,6 +406,24 @@ const Admin = () => {
                     </div>
                 ) : (
                     <div>
+                        {/* ── Error Banner ── */}
+                        {fetchError && (
+                            <div className="mb-6 p-4 rounded-2xl border border-red-500/30 bg-red-500/10 flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-3">
+                                    <ShieldAlert size={20} className="text-red-400 shrink-0" />
+                                    <div>
+                                        <p className="text-red-400 text-xs font-black uppercase tracking-widest mb-0.5">Data Load Failed</p>
+                                        <p className="text-red-300/70 text-[11px] font-mono">{fetchError}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => fetchData()}
+                                    className="shrink-0 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-black uppercase tracking-widest rounded-xl transition-all border border-red-500/20"
+                                >
+                                    Retry
+                                </button>
+                            </div>
+                        )}
 
                         {/* ── DASHBOARD TAB ── */}
                         {activeTab === 'dashboard' && (

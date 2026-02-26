@@ -26,6 +26,7 @@ app.set('trust proxy', 1);
 const allowedOrigins = [
     process.env.FRONTEND_URL,
     process.env.BACKEND_URL,
+    'https://ai-readme-generator-xjm1.onrender.com',  // backend serving frontend
     'http://localhost:5173',
     'http://localhost:3000'
 ].filter(Boolean).map(url => url.replace(/\/+$/, ''));
