@@ -297,12 +297,17 @@ const Admin = () => {
                             <div className="flex justify-between text-xs">
                                 <span className="text-gray-500">Uptime</span>
                                 <span className="text-white">
-                                    {Math.floor(systemStatus.uptime / 3600)}h{' '}
-                                    {Math.floor((systemStatus.uptime % 3600) / 60)}m
+                                    {Math.floor(Number(systemStatus.uptime) / 3600)}h{' '}
+                                    {Math.floor((Number(systemStatus.uptime) % 3600) / 60)}m
                                 </span>
                             </div>
-                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                <div className="bg-sky-500 h-full w-[65%]" />
+                            <div className="flex justify-between text-xs">
+                                <span className="text-gray-500">Collections</span>
+                                <span className="text-white">{systemStatus.collections ?? '—'}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                                <span className="text-gray-500">Memory</span>
+                                <span className="text-white">{systemStatus.memory ? `${Math.round(systemStatus.memory)}MB` : '—'}</span>
                             </div>
                         </div>
                     </div>
@@ -428,10 +433,11 @@ const Admin = () => {
                         {/* ── DASHBOARD TAB ── */}
                         {activeTab === 'dashboard' && (
                             <div className="space-y-8">
-                                <div className="grid grid-cols-3 gap-6">
-                                    <AdminStatCard label="Total Users" value={stats.totalUsers} sub="Lifetime Growth" icon={<Users className="text-blue-400" />} trend="+12.5%" />
-                                    <AdminStatCard label="Premium Members" value={stats.proUsers} sub="Elite Status" icon={<UserCheck className="text-emerald-400" />} trend="+4.2%" />
-                                    <AdminStatCard label="Daily Creations" value={stats.gensToday} sub="AI Performance" icon={<Activity className="text-orange-400" />} trend="+18.1%" />
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <AdminStatCard label="Total Users" value={stats?.totalUsers ?? 0} sub="Lifetime Growth" icon={<Users className="text-blue-400" />} trend="+12.5%" />
+                                    <AdminStatCard label="Premium Members" value={stats?.proUsers ?? 0} sub="Elite Status" icon={<UserCheck className="text-emerald-400" />} trend="+4.2%" />
+                                    <AdminStatCard label="Daily Creations" value={stats?.gensToday ?? 0} sub="AI Performance" icon={<Activity className="text-orange-400" />} trend="+18.1%" />
+                                    <AdminStatCard label="Total READMEs" value={stats?.totalReadmes ?? 0} sub="All Time" icon={<BarChart3 className="text-purple-400" />} trend="+9.8%" />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-6">

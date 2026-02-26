@@ -37,6 +37,7 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
         const proUsers = await User.countDocuments({ isPro: true });
+        const totalReadmes = await MainEntity.countDocuments();
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -45,7 +46,7 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
             createdAt: { $gte: today }
         });
 
-        res.json({ totalUsers, proUsers, gensToday });
+        res.json({ totalUsers, proUsers, gensToday, totalReadmes });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -136,9 +137,10 @@ router.get('/users/:id/details', authenticateAdmin, async (req, res) => {
 router.get('/activities', authenticateAdmin, async (req, res) => {
     try {
         const activities = await Activity.find()
-            .populate('user', 'name email')
+            .populate({ path: 'user', select: 'name email', options: { strictPopulate: false } })
             .sort({ createdAt: -1 })
-            .limit(100);
+            .limit(100)
+            .lean();  // plain JS objects, faster + avoids populate errors on null user
         res.json(activities);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -263,14 +265,23 @@ router.get('/analytics/tech-stacks', authenticateAdmin, async (req, res) => {
 // ─────────────────────────────────────────────
 router.get('/system/status', authenticateAdmin, async (req, res) => {
     try {
-        const dbStatus = mongoose.connection.readyState === 1 ? 'Healthy' : 'Disconnected';
-        const collections = await mongoose.connection.db.listCollections().toArray();
+        const readyState = mongoose.connection.readyState;
+        const dbStatus = readyState === 1 ? 'Healthy' : readyState === 2 ? 'Connecting' : 'Disconnected';
+
+        let collectionsCount = 0;
+        try {
+            const collections = await mongoose.connection.db.listCollections().toArray();
+            collectionsCount = collections.length;
+        } catch (_) { /* db might not be fully ready */ }
+
+        const uptimeSeconds = Math.floor(process.uptime());  // always a number
+        const memoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
 
         res.json({
             db: dbStatus,
-            uptime: Math.floor(process.uptime()),
-            collections: collections.length,
-            memory: process.memoryUsage().heapUsed / 1024 / 1024
+            uptime: uptimeSeconds,
+            collections: collectionsCount,
+            memory: memoryMB
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
