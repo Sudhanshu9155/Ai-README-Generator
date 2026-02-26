@@ -63,7 +63,8 @@ const API_BASE = '/api/admin';
 // ──────────────────────────────────────────────────────────────
 const Admin = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [token, setToken] = useState(localStorage.getItem('adminToken'));
+    const [isInitialising, setIsInitialising] = useState(!!localStorage.getItem('adminToken'));
+    const [token, setToken] = useState(() => localStorage.getItem('adminToken'));
     const [activeTab, setActiveTab] = useState('dashboard');
     const [users, setUsers] = useState([]);
     const [activities, setActivities] = useState([]);
@@ -77,17 +78,25 @@ const Admin = () => {
     const [loading, setLoading] = useState(false);
     const [loginData, setLoginData] = useState({ username: '', password: '' });
 
+    // On mount: if a stored token exists, validate it by calling fetchData.
+    // Pass the token directly to avoid the stale-closure race condition.
     useEffect(() => {
-        if (token) {
-            setIsLoggedIn(true);
-            fetchData();
+        const storedToken = localStorage.getItem('adminToken');
+        if (storedToken) {
+            fetchData(storedToken);
+        } else {
+            setIsInitialising(false);
         }
-    }, [token]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    const fetchData = async () => {
+    // fetchData accepts the token directly to avoid stale closure on first load
+    const fetchData = async (authToken) => {
+        const t = authToken || token;
+        if (!t) return;
         setLoading(true);
         try {
-            const headers = { Authorization: `Bearer ${token}` };
+            const headers = { Authorization: `Bearer ${t}` };
             const [uRes, aRes, sRes, statsRes, nRes, tRes, sysRes] = await Promise.all([
                 axios.get(`${API_BASE}/users`, { headers }),
                 axios.get(`${API_BASE}/activities`, { headers }),
@@ -97,20 +106,25 @@ const Admin = () => {
                 axios.get(`${API_BASE}/analytics/tech-stacks`, { headers }),
                 axios.get(`${API_BASE}/system/status`, { headers })
             ]);
-            setUsers(uRes.data);
-            setActivities(aRes.data);
-            setSuspicious(sRes.data);
-            setStats(statsRes.data);
-            setNotifications(nRes.data);
-            setTechAnalytics(tRes.data);
-            setSystemStatus(sysRes.data);
+            setUsers(Array.isArray(uRes.data) ? uRes.data : []);
+            setActivities(Array.isArray(aRes.data) ? aRes.data : []);
+            setSuspicious(Array.isArray(sRes.data) ? sRes.data : []);
+            setStats(statsRes.data || { totalUsers: 0, proUsers: 0, gensToday: 0 });
+            setNotifications(Array.isArray(nRes.data) ? nRes.data : []);
+            setTechAnalytics(Array.isArray(tRes.data) ? tRes.data : []);
+            setSystemStatus(sysRes.data || null);
+            // Token is valid — mark as logged in
+            setToken(t);
+            setIsLoggedIn(true);
         } catch (err) {
             console.error('Admin data fetch error:', err);
             if (err.response?.status === 401 || err.response?.status === 403) {
                 handleLogout();
             }
+        } finally {
+            setLoading(false);
+            setIsInitialising(false);
         }
-        setLoading(false);
     };
 
     const handleLogin = async (e) => {
@@ -168,6 +182,16 @@ const Admin = () => {
         }
         setLoading(false);
     };
+
+    // ── INITIALISING (validating stored token) ─────────────────
+    if (isInitialising) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[#020617] gap-4">
+                <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-sky-400 text-xs font-black uppercase tracking-[0.3em]">Authenticating…</p>
+            </div>
+        );
+    }
 
     // ── LOGIN SCREEN ──────────────────────────────────────────
     if (!isLoggedIn) {
