@@ -91,7 +91,9 @@ const Admin = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // fetchData accepts the token directly to avoid stale closure on first load
+    // fetchData — uses Promise.allSettled so ONE failing endpoint cannot kill all data.
+    // Each API result is checked individually; partial failures show an error banner
+    // but still populate all successfully fetched sections.
     const fetchData = async (authToken) => {
         const t = authToken || token;
         if (!t) return;
@@ -99,7 +101,8 @@ const Admin = () => {
         setFetchError(null);
         try {
             const headers = { Authorization: `Bearer ${t}` };
-            const [uRes, aRes, sRes, statsRes, nRes, tRes, sysRes] = await Promise.all([
+
+            const [uRes, aRes, sRes, statsRes, nRes, tRes, sysRes] = await Promise.allSettled([
                 axios.get(`${API_BASE}/users`, { headers }),
                 axios.get(`${API_BASE}/activities`, { headers }),
                 axios.get(`${API_BASE}/suspicious`, { headers }),
@@ -108,29 +111,43 @@ const Admin = () => {
                 axios.get(`${API_BASE}/analytics/tech-stacks`, { headers }),
                 axios.get(`${API_BASE}/system/status`, { headers })
             ]);
-            setUsers(Array.isArray(uRes.data) ? uRes.data : []);
-            setActivities(Array.isArray(aRes.data) ? aRes.data : []);
-            setSuspicious(Array.isArray(sRes.data) ? sRes.data : []);
-            setStats(statsRes.data || { totalUsers: 0, proUsers: 0, gensToday: 0 });
-            setNotifications(Array.isArray(nRes.data) ? nRes.data : []);
-            setTechAnalytics(Array.isArray(tRes.data) ? tRes.data : []);
-            setSystemStatus(sysRes.data || null);
-            // Token is valid — mark as logged in
+
+            // Helper: safely get data from a settled result
+            const ok = (r, fallback) => r.status === 'fulfilled' ? r.value.data : fallback;
+
+            // Check if the AUTH endpoints (users/stats) failed with 401/403
+            const authFailed = [uRes, statsRes].some(r =>
+                r.status === 'rejected' &&
+                (r.reason?.response?.status === 401 || r.reason?.response?.status === 403)
+            );
+            if (authFailed) { handleLogout(); return; }
+
+            // Populate every section with whatever data arrived
+            setUsers(Array.isArray(ok(uRes, [])) ? ok(uRes, []) : []);
+            setActivities(Array.isArray(ok(aRes, [])) ? ok(aRes, []) : []);
+            setSuspicious(Array.isArray(ok(sRes, [])) ? ok(sRes, []) : []);
+            setStats(ok(statsRes, { totalUsers: 0, proUsers: 0, gensToday: 0, totalReadmes: 0 }));
+            setNotifications(Array.isArray(ok(nRes, [])) ? ok(nRes, []) : []);
+            setTechAnalytics(Array.isArray(ok(tRes, [])) ? ok(tRes, []) : []);
+            setSystemStatus(ok(sysRes, null));
+
+            // Collect any non-auth errors for the banner
+            const failures = [uRes, aRes, sRes, statsRes, nRes, tRes, sysRes]
+                .filter(r => r.status === 'rejected')
+                .map(r => r.reason?.response?.data?.message || r.reason?.message || 'Unknown');
+            if (failures.length > 0) {
+                console.warn('Admin: some endpoints failed:', failures);
+                setFetchError(`${failures.length} endpoint(s) failed: ${failures.join(' | ')}`);
+            }
+
             setToken(t);
             setIsLoggedIn(true);
         } catch (err) {
-            const status = err.response?.status;
-            const msg = err.response?.data?.message || err.message || 'Unknown error';
-            console.error(`Admin fetchData failed [${status}]:`, msg, err);
-            if (status === 401 || status === 403) {
-                handleLogout();
-            } else {
-                // Non-auth error (500, network, etc.) — stay logged in but show error
-                setFetchError(`Failed to load data: ${msg} (status ${status || 'network error'})`);
-                // Still mark as logged in so the dashboard shows
-                setIsLoggedIn(true);
-                setToken(t);
-            }
+            // Only reaches here for unexpected JS errors (not HTTP errors)
+            console.error('Admin fetchData unexpected error:', err);
+            setFetchError(`Unexpected error: ${err.message}`);
+            setIsLoggedIn(true);
+            setToken(t);
         } finally {
             setLoading(false);
             setIsInitialising(false);
@@ -570,7 +587,15 @@ const Admin = () => {
                         {/* ── ACTIVITY TAB ── */}
                         {activeTab === 'activity' && (
                             <div className="space-y-4 max-w-4xl mx-auto">
-                                {activities.map((act, i) => (
+                                {activities.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-24 gap-4">
+                                        <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                            <Activity size={28} className="text-gray-600" />
+                                        </div>
+                                        <p className="text-gray-500 text-xs font-black uppercase tracking-[0.3em]">No Activity Logs Yet</p>
+                                        <p className="text-gray-700 text-[11px]">Activity will appear here as users generate READMEs, login, or register.</p>
+                                    </div>
+                                ) : activities.map((act, i) => (
                                     <div key={i} className="p-5 rounded-2xl flex items-center gap-5 border border-white/5 hover:bg-white/[0.02] transition-all" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <div className="h-12 w-12 rounded-2xl bg-sky-600/20 flex items-center justify-center text-sky-500 border border-sky-500/10">
                                             <Activity size={24} />
