@@ -51,11 +51,11 @@ const safeChartData = (data, valueKey = 'value') => {
 };
 
 // ──────────────────────────────────────────────────────────────
-// Point this at your main backend's admin prefix.
-// If you mount the adminRoutes.js at /api/admin in backend/server.js,
-// the Vite proxy (already set to http://localhost:5000) will forward it.
+// Admin API base URL — reads from VITE_API_URL env variable.
+// Set VITE_API_URL in frontend/.env (local) or Render environment.
+// Falls back to '/api' (relative) so Vite proxy works in local dev.
 // ──────────────────────────────────────────────────────────────
-const API_BASE = '/api/admin';
+const API_BASE = `${import.meta.env.VITE_API_URL || '/api'}/admin`;
 
 // ──────────────────────────────────────────────────────────────
 // Admin Dashboard Page
