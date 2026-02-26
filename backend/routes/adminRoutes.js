@@ -288,4 +288,29 @@ router.get('/system/status', authenticateAdmin, async (req, res) => {
     }
 });
 
+// ─────────────────────────────────────────────
+// GET /api/admin/debug  ← TEMPORARY diagnostic
+// Shows what DB is connected and doc counts
+// ─────────────────────────────────────────────
+router.get('/debug', authenticateAdmin, async (req, res) => {
+    try {
+        const userCount = await User.countDocuments();
+        const activityCount = await Activity.countDocuments();
+        const readmeCount = await MainEntity.countDocuments();
+        const db = mongoose.connection;
+
+        res.json({
+            dbName: db.name,
+            dbHost: db.host,
+            readyState: db.readyState,
+            env_MONGO_DB_NAME: process.env.MONGO_DB_NAME,
+            counts: { users: userCount, activities: activityCount, readmes: readmeCount },
+            JWT_SECRET_length: (process.env.JWT_SECRET || '').length,
+            ADMIN_USERNAME: process.env.ADMIN_USERNAME || '(not set)',
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message, stack: error.stack });
+    }
+});
+
 export default router;
