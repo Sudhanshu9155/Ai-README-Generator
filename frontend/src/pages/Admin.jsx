@@ -411,6 +411,35 @@ const Admin = () => {
                     </div>
                 </header>
 
+                {systemStatus && (
+                    <div className="lg:hidden mb-6 p-4 bg-white/5 rounded-2xl border border-white/5 space-y-3">
+                        <div className="flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <span>System Health</span>
+                            <span className="text-emerald-400">Online</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="flex justify-between gap-2">
+                                <span className="text-gray-500">DB</span>
+                                <span className="text-white">{systemStatus.db}</span>
+                            </div>
+                            <div className="flex justify-between gap-2">
+                                <span className="text-gray-500">Uptime</span>
+                                <span className="text-white">
+                                    {Math.floor(Number(systemStatus.uptime) / 3600)}h {Math.floor((Number(systemStatus.uptime) % 3600) / 60)}m
+                                </span>
+                            </div>
+                            <div className="flex justify-between gap-2">
+                                <span className="text-gray-500">Collections</span>
+                                <span className="text-white">{systemStatus.collections ?? '-'}</span>
+                            </div>
+                            <div className="flex justify-between gap-2">
+                                <span className="text-gray-500">Memory</span>
+                                <span className="text-white">{systemStatus.memory ? `${Math.round(systemStatus.memory)}MB` : '-'}</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Content */}
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-96 gap-4">
@@ -424,7 +453,7 @@ const Admin = () => {
                     <div>
                         {/* ── Error Banner ── */}
                         {fetchError && (
-                            <div className="mb-6 p-4 rounded-2xl border border-red-500/30 bg-red-500/10 flex items-center justify-between gap-4">
+                            <div className="mb-6 p-4 rounded-2xl border border-red-500/30 bg-red-500/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <div className="flex items-center gap-3">
                                     <ShieldAlert size={20} className="text-red-400 shrink-0" />
                                     <div>
@@ -453,7 +482,7 @@ const Admin = () => {
 
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                     {/* Generation Velocity Line Chart */}
-                                    <div className="p-8 rounded-[2rem] border border-white/5" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                    <div className="p-5 sm:p-8 rounded-[2rem] border border-white/5" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <div className="flex justify-between items-center mb-6">
                                             <h3 className="font-bold flex items-center gap-3 text-lg">
                                                 <div className="w-2 h-2 bg-sky-500 rounded-full animate-pulse" />
@@ -481,17 +510,17 @@ const Admin = () => {
                                     </div>
 
                                     {/* System Pulse */}
-                                    <div className="p-8 rounded-[2rem] border border-white/5 flex flex-col" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                    <div className="p-5 sm:p-8 rounded-[2rem] border border-white/5 flex flex-col" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <h3 className="font-bold mb-6 text-lg">System Pulse</h3>
                                         <div className="space-y-4 flex-1">
                                             {activities.slice(0, 5).map((act, i) => (
-                                                <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] rounded-2xl border border-white/[0.03] hover:bg-white/[0.05] transition-all">
+                                                <div key={i} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/[0.02] rounded-2xl border border-white/[0.03] hover:bg-white/[0.05] transition-all">
                                                     <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center border border-white/10">
                                                         <Activity size={18} className="text-gray-400" />
                                                     </div>
                                                     <div className="flex-1">
                                                         <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">{act.action.replace('_', ' ')}</p>
-                                                        <p className="text-sm font-medium text-white truncate max-w-[200px]">{act.details || 'System Operation'}</p>
+                                                        <p className="text-sm font-medium text-white truncate max-w-[140px] sm:max-w-[200px]">{act.details || 'System Operation'}</p>
                                                     </div>
                                                     <p className="text-[10px] text-gray-600 font-mono">{new Date(act.createdAt).toLocaleDateString()}</p>
                                                 </div>
@@ -505,7 +534,8 @@ const Admin = () => {
                         {/* ── USERS TAB ── */}
                         {activeTab === 'users' && (
                             <div className="rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
-                                <table className="w-full text-left">
+                                <div className="overflow-x-auto">
+                                <table className="w-full min-w-[900px] text-left">
                                     <thead>
                                         <tr className="bg-white/[0.03] border-b border-white/5">
                                             <th className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">User</th>
@@ -575,6 +605,7 @@ const Admin = () => {
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         )}
 
@@ -590,7 +621,7 @@ const Admin = () => {
                                         <p className="text-gray-700 text-[11px]">Activity will appear here as users generate READMEs, login, or register.</p>
                                     </div>
                                 ) : activities.map((act, i) => (
-                                    <div key={i} className="p-5 rounded-2xl flex items-center gap-5 border border-white/5 hover:bg-white/[0.02] transition-all" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                    <div key={i} className="p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 border border-white/5 hover:bg-white/[0.02] transition-all" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
                                         <div className="h-12 w-12 rounded-2xl bg-sky-600/20 flex items-center justify-center text-sky-500 border border-sky-500/10">
                                             <Activity size={24} />
                                         </div>
@@ -605,7 +636,7 @@ const Admin = () => {
                                                 <span>{act.details || 'Operation processed'}</span>
                                             </p>
                                         </div>
-                                        <div className="text-right">
+                                        <div className="text-left sm:text-right w-full sm:w-auto">
                                             <div className="text-sm font-black text-white px-2 py-1 bg-white/5 rounded-lg mb-1">
                                                 {new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
@@ -762,8 +793,8 @@ const Admin = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {suspicious.map((s, i) => (
-                                        <div key={i} className="p-8 rounded-[2rem] border-l-[6px] border-red-600 hover:bg-red-500/5 transition-all" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
-                                            <div className="flex justify-between items-start mb-6">
+                                        <div key={i} className="p-5 sm:p-8 rounded-[2rem] border-l-[6px] border-red-600 hover:bg-red-500/5 transition-all" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${s.overallSeverity === 'critical' ? 'bg-red-500/10 border border-red-500/20 text-red-500' : 'bg-amber-500/10 border border-amber-500/20 text-amber-500'}`}>
                                                         <UserX size={28} />
@@ -787,7 +818,7 @@ const Admin = () => {
                                                         <span className={`font-black ${t.severity === 'high' ? 'text-red-500' : 'text-amber-500'}`}>{t.count}x</span>
                                                     </div>
                                                 ))}
-                                                <div className="pt-4 flex gap-3">
+                                                <div className="pt-4 flex flex-col sm:flex-row gap-3">
                                                     <button onClick={() => togglePro(s.user._id)} className="flex-1 bg-white/[0.05] hover:bg-white/10 text-white text-[10px] font-black py-4 rounded-xl transition-all uppercase tracking-widest border border-white/5">
                                                         Restrict
                                                     </button>
@@ -817,9 +848,9 @@ const Admin = () => {
 
             {/* ── User Detail Modal ── */}
             {selectedUser && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#020617]/90 backdrop-blur-2xl">
+                <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-2 sm:p-6 bg-[#020617]/90 backdrop-blur-2xl">
                     <div
-                        className="w-full max-w-6xl max-h-[95vh] rounded-2xl sm:rounded-[3rem] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10"
+                        className="w-full max-w-6xl max-h-[98vh] rounded-2xl sm:rounded-[3rem] overflow-hidden flex flex-col shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10"
                         style={{ background: 'rgba(30,41,59,0.95)', backdropFilter: 'blur(20px)' }}
                     >
                         <div className="p-6 sm:p-12 bg-gradient-to-br from-sky-600/20 to-transparent border-b border-white/5 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
@@ -834,7 +865,7 @@ const Admin = () => {
                                             {selectedUser.user.isPro ? 'PRO' : 'FREE'}
                                         </span>
                                     </div>
-                                    <span className="text-gray-500 font-mono text-sm bg-white/5 px-4 py-2 rounded-xl border border-white/5">{selectedUser.user.email}</span>
+                                    <span className="inline-block max-w-full break-all text-gray-500 font-mono text-xs sm:text-sm bg-white/5 px-4 py-2 rounded-xl border border-white/5">{selectedUser.user.email}</span>
                                 </div>
                             </div>
                             <button onClick={() => setSelectedUser(null)} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all border border-white/10">
@@ -851,7 +882,7 @@ const Admin = () => {
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {selectedUser.readmes.map((r, i) => (
-                                            <div key={i} className="p-8 bg-white/[0.03] rounded-[2rem] border border-white/[0.05] hover:border-sky-500/40 transition-all">
+                                            <div key={i} className="p-5 sm:p-8 bg-white/[0.03] rounded-[2rem] border border-white/[0.05] hover:border-sky-500/40 transition-all">
                                                 <div className="flex justify-between items-start mb-4">
                                                     <h4 className="font-black text-lg text-white uppercase truncate max-w-[180px]">{r.title}</h4>
                                                     <span className="text-[10px] bg-white/5 px-2 py-1 rounded-md text-gray-600 font-mono">{new Date(r.createdAt).toLocaleDateString()}</span>
@@ -879,10 +910,10 @@ const Admin = () => {
                                     </h3>
                                     <div className="space-y-3">
                                         {selectedUser.activity.map((a, i) => (
-                                            <div key={i} className="flex items-center gap-6 text-sm p-4 bg-white/[0.015] rounded-2xl border border-white/[0.03] hover:bg-white/[0.04] transition-all">
-                                                <span className="font-mono text-[10px] text-gray-600 px-3 py-1 bg-white/5 rounded-lg">{new Date(a.createdAt).toLocaleString()}</span>
+                                            <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-sm p-4 bg-white/[0.015] rounded-2xl border border-white/[0.03] hover:bg-white/[0.04] transition-all">
+                                                <span className="font-mono text-[10px] text-gray-600 px-3 py-1 bg-white/5 rounded-lg w-fit">{new Date(a.createdAt).toLocaleString()}</span>
                                                 <span className="text-white font-black flex-1 tracking-widest uppercase text-xs">{a.action.replace('_', ' ')}</span>
-                                                <span className="text-[10px] font-black text-sky-500 uppercase tracking-widest">Verified</span>
+                                                <span className="text-[10px] font-black text-sky-500 uppercase tracking-widest self-start sm:self-auto">Verified</span>
                                             </div>
                                         ))}
                                     </div>
@@ -891,7 +922,7 @@ const Admin = () => {
 
                             {/* Sidebar panel */}
                             <div className="space-y-8">
-                                <div className="p-8 rounded-[2.5rem] border border-white/10 bg-white/[0.02]">
+                                <div className="p-5 sm:p-8 rounded-[2.5rem] border border-white/10 bg-white/[0.02]">
                                     <h3 className="font-black mb-6 text-xs uppercase tracking-[0.2em] text-gray-500">Technology Profile</h3>
                                     <div className="space-y-5">
                                         {selectedUser.techProfile.map(([name, count], i) => (
@@ -909,7 +940,7 @@ const Admin = () => {
                                     </div>
                                 </div>
 
-                                <div className="p-8 border border-white/5 rounded-[2rem] bg-white/[0.01] text-center">
+                                <div className="p-5 sm:p-8 border border-white/5 rounded-[2rem] bg-white/[0.01] text-center">
                                     <button onClick={() => deleteUser(selectedUser.user._id)} className="w-full py-4 text-red-500 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-red-500/10 rounded-2xl transition-all">
                                         DELETE USER
                                     </button>
@@ -933,7 +964,7 @@ const SidebarLink = ({ icon, label, active, onClick, badge }) => (
             : 'text-gray-500 hover:bg-white/[0.02] hover:text-gray-300'
             }`}
     >
-        {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-sky-500 rounded-r-full shadow-[0_0_15px_rgba(14,165,233,1)]" />}
+        {active && <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-sky-500 rounded-r-full shadow-[0_0_15px_rgba(14,165,233,1)]" />}
         <span className={`${active ? 'scale-125 text-sky-500' : 'group-hover:text-sky-400'} transition-all`}>{icon}</span>
         <span className={`flex-1 text-left font-bold text-xs sm:text-sm tracking-wide whitespace-nowrap ${active ? 'text-white' : ''}`}>{label}</span>
         {badge > 0 && (
@@ -945,7 +976,7 @@ const SidebarLink = ({ icon, label, active, onClick, badge }) => (
 );
 
 const AdminStatCard = ({ label, value, icon, trend, sub }) => (
-    <div className="p-8 rounded-[2.5rem] hover:-translate-y-2 transition-all duration-500 cursor-default relative overflow-hidden border border-white/5" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
+    <div className="p-5 sm:p-8 rounded-[2.5rem] hover:-translate-y-2 transition-all duration-500 cursor-default relative overflow-hidden border border-white/5" style={{ background: 'rgba(30,41,59,0.7)', backdropFilter: 'blur(12px)' }}>
         <div className="absolute top-0 right-0 w-48 h-48 bg-sky-500/5 rounded-full -translate-y-24 translate-x-24" />
         <div className="flex justify-between items-start mb-6 relative">
             <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5">
@@ -956,8 +987,8 @@ const AdminStatCard = ({ label, value, icon, trend, sub }) => (
             </span>
         </div>
         <div className="relative">
-            <h3 className="text-5xl font-black text-white mb-2 tracking-tighter">{value}</h3>
-            <p className="text-sm font-black text-gray-500 uppercase tracking-[0.2em]">{label}</p>
+            <h3 className="text-3xl sm:text-5xl font-black text-white mb-2 tracking-tighter">{value}</h3>
+            <p className="text-xs sm:text-sm font-black text-gray-500 uppercase tracking-[0.12em] sm:tracking-[0.2em]">{label}</p>
             <p className="text-[10px] text-gray-700 mt-3 font-bold border-t border-white/5 pt-3 uppercase italic">{sub}</p>
         </div>
     </div>
