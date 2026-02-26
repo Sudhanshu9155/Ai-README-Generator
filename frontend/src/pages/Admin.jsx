@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Component } from 'react';
 import axios from 'axios';
+import { getApiBaseUrl } from '../config/api';
 import {
     Users, Activity, ShieldAlert, ShieldCheck,
     Trash2, UserCheck, UserX, BarChart3,
@@ -50,7 +51,10 @@ const safeChartData = (data, valueKey = 'value') => {
     }));
 };
 
-const API_BASE = import.meta.env.VITE_API_URL;
+const trimTrailingSlash = (value = '') => value.replace(/\/+$/, '');
+const API_BASE = trimTrailingSlash(
+    import.meta.env.VITE_ADMIN_API_URL || `${getApiBaseUrl()}/admin`
+);
 const Admin = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isInitialising, setIsInitialising] = useState(!!localStorage.getItem('adminToken'));
@@ -151,7 +155,7 @@ const Admin = () => {
             const newToken = res.data.token;
             setToken(newToken);
             localStorage.setItem('adminToken', newToken);
-            setIsLoggedIn(true);
+            await fetchData(newToken);
         } catch (err) {
             alert('Invalid Admin Credentials');
         }
