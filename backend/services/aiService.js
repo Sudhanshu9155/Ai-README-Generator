@@ -31,21 +31,18 @@ export const generateReadmeContent = async (projectDetails) => {
 
         // Aesthetics matter: use clean spacing, bold highlights for key terms, and professional formatting. Format in strict Markdown.`;
 
-        const prompt = `You are an expert technical writer. Generate a modern, high-quality, and professional README.md for a software project based on the following details:
+        const prompt = ` Generate a modern, high-quality README.md for a project with these details:
+- Project Title: ${title}
+- Description: ${description}
+- Tech Stack: ${techStack.join(', ')}
+- Key Features: ${features.join(', ')}
 
-Project Title: {title}
-Description: {description}
-Tech Stack: {techStack} (comma-separated list of languages, frameworks, tools)
-Key Features: {features} (comma-separated list of features)
+Rules:
+- Use ONLY the provided tech stack and features as source of truth.
+- Do NOT invent frameworks, databases, or architecture details that are not listed.
+- Keep installation and usage commands aligned with the detected stack.
 
-Critical accuracy rules:
-- Use ONLY the provided tech stack and features as source of truth. Do not invent any technologies, dependencies, or features not listed.
-- Infer the project type (e.g., web application, library, CLI tool, API, mobile app) from the tech stack and description, and tailor the README sections accordingly.
-- For installation and usage commands, determine the appropriate package manager or build tool based on the tech stack (e.g., npm/yarn/pnpm for Node.js, pip for Python, composer for PHP, cargo for Rust, go mod for Go, mvn/gradle for Java, gem for Ruby, etc.). If the stack includes multiple possibilities, choose the most common one or provide options.
-- Do not assume any specific architecture (e.g., SSR, database) unless explicitly mentioned in the tech stack or description.
-
-The README must follow this structural pattern, but adapt sections as needed for the project type:
-
+Structure:
 1. **Header**:
    - Project Title as H1
    - A short, catchy description line (can be derived from the provided description)
