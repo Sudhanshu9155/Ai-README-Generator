@@ -9,6 +9,118 @@ import MainEntity from '../models/MainEntity.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const MAX_ANALYSIS_FILES = 5000;
+
+const skipDirs = new Set([
+    '.git',
+    'node_modules',
+    'vendor',
+    'dist',
+    'build',
+    '.next',
+    '.nuxt',
+    'coverage',
+    '.cache',
+    '.idea',
+    '.vscode'
+]);
+
+const collectRepoFiles = (rootDir) => {
+    const files = [];
+    const stack = [rootDir];
+
+    while (stack.length && files.length < MAX_ANALYSIS_FILES) {
+        const current = stack.pop();
+        const entries = fs.readdirSync(current, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const fullPath = path.join(current, entry.name);
+            const relativePath = path.relative(rootDir, fullPath).replace(/\\/g, '/');
+
+            if (entry.isDirectory()) {
+                if (!skipDirs.has(entry.name.toLowerCase())) {
+                    stack.push(fullPath);
+                }
+                continue;
+            }
+
+            files.push(relativePath);
+            if (files.length >= MAX_ANALYSIS_FILES) break;
+        }
+    }
+
+    return files;
+};
+
+const parseJsonIfExists = (filePath) => {
+    if (!fs.existsSync(filePath)) return null;
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch {
+        return null;
+    }
+};
+
+const inferTechStack = (repoDir) => {
+    const files = collectRepoFiles(repoDir);
+    const normalized = files.map(f => f.toLowerCase());
+    const stack = new Set();
+
+    const hasExt = (ext) => normalized.some(f => f.endsWith(ext));
+    const hasFile = (filename) => normalized.includes(filename.toLowerCase());
+    const hasPathPart = (part) => normalized.some(f => f.includes(part.toLowerCase()));
+    const hasSuffix = (suffix) => normalized.some(f => f.endsWith(suffix.toLowerCase()));
+
+    if (hasExt('.php') || hasFile('composer.json')) stack.add('PHP');
+    if (hasExt('.html') || hasExt('.htm')) stack.add('HTML');
+    if (hasExt('.css') || hasExt('.scss') || hasExt('.sass') || hasExt('.less')) stack.add('CSS');
+    if (hasExt('.ts') || hasExt('.tsx')) stack.add('TypeScript');
+    if (hasExt('.js') || hasExt('.jsx') || hasFile('package.json')) stack.add('JavaScript');
+    if (hasExt('.py') || hasFile('requirements.txt') || hasFile('pyproject.toml')) stack.add('Python');
+    if (hasExt('.java') || hasFile('pom.xml') || hasFile('build.gradle')) stack.add('Java');
+    if (hasExt('.go') || hasFile('go.mod')) stack.add('Go');
+    if (hasExt('.rs') || hasFile('cargo.toml')) stack.add('Rust');
+    if (hasExt('.rb') || hasFile('gemfile')) stack.add('Ruby');
+    if (hasExt('.cs') || hasSuffix('.csproj') || hasSuffix('.sln')) stack.add('C#');
+    if (hasFile('dockerfile') || hasPathPart('/dockerfile') || hasFile('docker-compose.yml') || hasFile('docker-compose.yaml')) stack.add('Docker');
+
+    const packageJson = parseJsonIfExists(path.join(repoDir, 'package.json'));
+    if (packageJson) {
+        const deps = {
+            ...(packageJson.dependencies || {}),
+            ...(packageJson.devDependencies || {})
+        };
+        const depNames = Object.keys(deps).map(d => d.toLowerCase());
+        const hasDep = (dep) => depNames.includes(dep);
+
+        if (hasDep('react')) stack.add('React');
+        if (hasDep('next')) stack.add('Next.js');
+        if (hasDep('vue')) stack.add('Vue');
+        if (hasDep('angular') || hasDep('@angular/core')) stack.add('Angular');
+        if (hasDep('svelte')) stack.add('Svelte');
+        if (hasDep('express')) stack.add('Express');
+        if (hasDep('nestjs') || hasDep('@nestjs/core')) stack.add('NestJS');
+        if (hasDep('mongoose') || hasDep('mongodb')) stack.add('MongoDB');
+        if (hasDep('prisma')) stack.add('Prisma');
+        if (hasDep('typeorm')) stack.add('TypeORM');
+        if (hasDep('tailwindcss')) stack.add('Tailwind CSS');
+    }
+
+    const composerJson = parseJsonIfExists(path.join(repoDir, 'composer.json'));
+    if (composerJson) {
+        const deps = {
+            ...(composerJson.require || {}),
+            ...(composerJson['require-dev'] || {})
+        };
+        const depNames = Object.keys(deps).map(d => d.toLowerCase());
+
+        if (depNames.some(d => d.includes('laravel'))) stack.add('Laravel');
+        if (depNames.some(d => d.includes('symfony'))) stack.add('Symfony');
+        if (depNames.some(d => d.includes('codeigniter'))) stack.add('CodeIgniter');
+    }
+
+    return Array.from(stack);
+};
 
 // Helper to get user token securely
 const getGitHubToken = async (userId) => {
@@ -82,41 +194,16 @@ export const analyzeRepo = async (req, res) => {
 
         console.log('Clone successful. Analyzing files...');
 
-        // Analysis Logic (simplified for now)
-        // 1. Check for package.json (Node.js)
-        // 2. Check for requirements.txt (Python)
-        // 3. Read README.md if exists
-
-        let techStack = [];
+        // Analyze repository structure and manifests to infer real stack.
+        const techStack = inferTechStack(tempDir);
         let description = '';
         let projectTitle = repoName || '';
 
-        // Check package.json
         const packageJsonPath = path.join(tempDir, 'package.json');
-        if (fs.existsSync(packageJsonPath)) {
-            const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-            techStack.push('Node.js');
-            if (pkg.dependencies) {
-                techStack.push(...Object.keys(pkg.dependencies));
-            }
-            if (pkg.description) {
-                description = pkg.description;
-            }
-            if (pkg.name) {
-                projectTitle = pkg.name;
-            }
-        }
-
-        // Check requirements.txt
-        const requirementsPath = path.join(tempDir, 'requirements.txt');
-        if (fs.existsSync(requirementsPath)) {
-            techStack.push('Python');
-            // rudimentary parsing
-            const reqs = fs.readFileSync(requirementsPath, 'utf8').split('\n');
-            reqs.forEach(r => {
-                const lib = r.split('=')[0].trim();
-                if (lib) techStack.push(lib);
-            });
+        const pkg = parseJsonIfExists(packageJsonPath);
+        if (pkg) {
+            if (pkg.description) description = pkg.description;
+            if (pkg.name) projectTitle = pkg.name;
         }
 
         // Clean up: Delete the temp directory
@@ -130,7 +217,7 @@ export const analyzeRepo = async (req, res) => {
         res.json({
             title: projectTitle,
             description,
-            techStack: [...new Set(techStack)], // unique items
+            techStack,
             analyzed: true
         });
 
