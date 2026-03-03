@@ -49,7 +49,7 @@ const EditReadme = () => {
     //         <Loader message="Accessing Neural Database..." />
     //     </div>
     // );
-    if(loading) return <ReadmePreviewSkeleton/>;
+    if (loading) return <ReadmePreviewSkeleton/>;
 
     if (error) return (
         <div className="min-h-screen bg-[#030712] flex items-center justify-center">
