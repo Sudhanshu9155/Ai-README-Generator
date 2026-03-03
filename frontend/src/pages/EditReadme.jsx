@@ -5,6 +5,7 @@ import ReadmePreview from '../components/readme/ReadmePreview';
 import ReadmeForm from '../components/readme/ReadmeForm';
 import Loader from '../components/common/Loader';
 import { FaArrowLeft, FaEdit, FaTimes } from 'react-icons/fa';
+import ReadmePreviewSkeleton from '../components/skeletons/ReadmePreviewSkeleton';
 
 const EditReadme = () => {
     const { id } = useParams();
@@ -43,11 +44,12 @@ const EditReadme = () => {
         }
     };
 
-    if (loading) return (
-        <div className="min-h-screen bg-[#030712] flex items-center justify-center">
-            <Loader message="Accessing Neural Database..." />
-        </div>
-    );
+    // if (loading) return (
+    //     <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+    //         <Loader message="Accessing Neural Database..." />
+    //     </div>
+    // );
+    if(loading) return <ReadmePreviewSkeleton/>;
 
     if (error) return (
         <div className="min-h-screen bg-[#030712] flex items-center justify-center">
