@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getReadmeById, updateReadme } from '../api/entityApi';
 import ReadmePreview from '../components/readme/ReadmePreview';
 import ReadmeForm from '../components/readme/ReadmeForm';
-import Loader from '../components/common/Loader';
+// import Loader from '../components/common/Loader';
 import { FaArrowLeft, FaEdit, FaTimes } from 'react-icons/fa';
 import ReadmePreviewSkeleton from '../components/skeletons/ReadmePreviewSkeleton';
 
