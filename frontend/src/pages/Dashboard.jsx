@@ -4,7 +4,8 @@ import { getDashboardStats } from '../api/analyticsApi';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaPlus, FaGithub, FaHistory, FaTrash, FaEdit, FaCrown, FaTerminal, FaRobot, FaExternalLinkAlt } from 'react-icons/fa';
-import Loader from '../components/common/Loader';
+// import Loader from '../components/common/Loader';
+import DashboardSkeleton from '../components/skeletons/DashboardSkeleton';
 
 const Dashboard = () => {
     const { user } = useAuth(); 
@@ -43,7 +44,7 @@ const Dashboard = () => {
         }
     };
 
-    if (loading) return <Loader />;
+    if (loading) return <DashboardSkeleton />;
 
     return (
         <div className="min-h-screen bg-[#030712] text-slate-200 relative overflow-x-hidden font-sans">

@@ -15,7 +15,8 @@ import {
   CartesianGrid
 } from 'recharts';
 import { getDashboardStats } from '../../api/analyticsApi';
-import Loader from '../common/Loader';
+// import Loader from '../common/Loader';
+import ChartSkeleton from '../skeletons/ChartSkeleton';
 
 // Neural Theme Colors
 const COLORS = ['#8B5CF6', '#6366F1', '#0EA5E9', '#10B981', '#F43F5E'];
@@ -216,7 +217,8 @@ const AnalyticsChart = ({
     );
   };
 
-  if (loading) return <div className="h-[250px] flex items-center justify-center"><Loader /></div>;
+  // if (loading) return <div className="h-[250px] flex items-center justify-center"><Loader /></div>;
+  if(loading) return <ChartSkeleton title={title}/>;
 
   if (error || !chartData.length) {
     return (

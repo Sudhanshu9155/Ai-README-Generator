@@ -22,7 +22,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 console.error("Failed to fetch READMEs", error);
             }
         };
-        if (isOpen) fetchReadmes();
+
+        if (isOpen) {
+            fetchReadmes();
+        }
+
+        const handleReadmeUpdated = () => {
+            if (isOpen) {
+                fetchReadmes();
+            }
+        };
+
+        window.addEventListener('readme-list-updated', handleReadmeUpdated);
+        return () => window.removeEventListener('readme-list-updated', handleReadmeUpdated);
     }, [isOpen]);
 
     const isActive = (path) => location.pathname === path;

@@ -84,6 +84,7 @@ const CreateReadme = () => {
             }
             setGeneratedContent(result.content);
             setStep('preview');
+            window.dispatchEvent(new Event('readme-list-updated'));
 
             // --- AUTO PUSH TO GITHUB ---
             if (user?.isPro && result.repoUrl && result._id) {

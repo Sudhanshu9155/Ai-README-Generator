@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getUserActivity } from '../api/analyticsApi';
 import Loader from '../components/common/Loader';
 import { FaPlus, FaEdit, FaTrash, FaHistory, FaRobot, FaClock } from 'react-icons/fa';
+import HistorySkeleton from '../components/skeletons/HistorySkeleton';
 
 const History = () => {
     const [activities, setActivities] = useState([]);
@@ -34,7 +35,8 @@ const History = () => {
         }
     };
 
-    if (loading) return <Loader />;
+    // if (loading) return <Loader />;
+    if (loading) return <HistorySkeleton/>;
 
     return (
         <div className="min-h-screen bg-[#030712] text-slate-200 relative overflow-x-hidden font-sans pb-10">
